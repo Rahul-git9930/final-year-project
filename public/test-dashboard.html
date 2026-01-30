@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Test - Library Management System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f5f5f5;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Library Management System - Dashboard Test</h1>
+  
+  <div class="test-section">
+    <h2>Server Status</h2>
+    <div id="serverStatus" class="status">Checking server...</div>
+  </div>
+
+  <div class="test-section">
+    <h2>Authentication Test</h2>
+    <p>Current Token: <span id="tokenStatus">Not found</span></p>
+    <p>Current User: <span id="userStatus">Not found</span></p>
+    <button onclick="testAuth()">Test Auth Status</button>
+  </div>
+
+  <div class="test-section">
+    <h2>API Endpoints Test</h2>
+    <button onclick="testDashboardStats()">Test /api/dashboard/stats</button>
+    <button onclick="testBooks()">Test /api/books</button>
+    <button onclick="testTransactions()">Test /api/transactions/my</button>
+    <button onclick="testFines()">Test /api/fines/my</button>
+    <div id="apiResults"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Quick Actions</h2>
+    <button onclick="loginAsAdmin()">Login as Admin</button>
+    <button onclick="loginAsStudent()">Login as Student</button>
+    <button onclick="clearStorage()">Clear Storage</button>
+    <button onclick="goToAdmin()">Go to Admin Dashboard</button>
+    <button onclick="goToStudent()">Go to Student Dashboard</button>
+  </div>
+
+  <script>
+    // Test server status
+    async function checkServer() {
+      try {
+        const response = await fetch('/api/books');
+        const statusDiv = document.getElementById('serverStatus');
+        if (response.status === 401 || response.status === 403) {
+          statusDiv.className = 'status success';
+          statusDiv.textContent = '✅ Server is running (Authentication required)';
+        } else if (response.ok) {
+          statusDiv.className = 'status success';
+          statusDiv.textContent = '✅ Server is running and responding';
+        } else {
+          statusDiv.className = 'status error';
+          statusDiv.textContent = '⚠️ Server responded with status: ' + response.status;
+        }
+      } catch (error) {
+        const statusDiv = document.getElementById('serverStatus');
+        statusDiv.className = 'status error';
+        statusDiv.textContent = '❌ Server is not running. Error: ' + error.message;
+      }
+    }
+
+    // Test authentication
+    function testAuth() {
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+      
+      document.getElementById('tokenStatus').textContent = token ? '✅ Found' : '❌ Not found';
+      document.getElementById('userStatus').textContent = user ? JSON.stringify(JSON.parse(user)) : '❌ Not found';
+    }
+
+    // Test dashboard stats API
+    async function testDashboardStats() {
+      const resultsDiv = document.getElementById('apiResults');
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        resultsDiv.innerHTML = '<div class="status error">❌ No token found. Please login first.</div>';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/dashboard/stats', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          resultsDiv.innerHTML = `
+            <div class="status success">
+              ✅ Dashboard Stats API Working<br>
+              <pre>${JSON.stringify(data, null, 2)}</pre>
+            </div>
+          `;
+        } else {
+          resultsDiv.innerHTML = `<div class="status error">❌ Status: ${response.status} - ${response.statusText}</div>`;
+        }
+      } catch (error) {
+        resultsDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+      }
+    }
+
+    // Test books API
+    async function testBooks() {
+      const resultsDiv = document.getElementById('apiResults');
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        resultsDiv.innerHTML = '<div class="status error">❌ No token found. Please login first.</div>';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/books', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          resultsDiv.innerHTML = `
+            <div class="status success">
+              ✅ Books API Working<br>
+              Total Books: ${data.length}<br>
+              <pre>${JSON.stringify(data.slice(0, 2), null, 2)}</pre>
+            </div>
+          `;
+        } else {
+          resultsDiv.innerHTML = `<div class="status error">❌ Status: ${response.status} - ${response.statusText}</div>`;
+        }
+      } catch (error) {
+        resultsDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+      }
+    }
+
+    // Test transactions API
+    async function testTransactions() {
+      const resultsDiv = document.getElementById('apiResults');
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        resultsDiv.innerHTML = '<div class="status error">❌ No token found. Please login first.</div>';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/transactions/my', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          resultsDiv.innerHTML = `
+            <div class="status success">
+              ✅ Transactions API Working<br>
+              Total Transactions: ${data.length}<br>
+              <pre>${JSON.stringify(data.slice(0, 2), null, 2)}</pre>
+            </div>
+          `;
+        } else {
+          resultsDiv.innerHTML = `<div class="status error">❌ Status: ${response.status} - ${response.statusText}</div>`;
+        }
+      } catch (error) {
+        resultsDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+      }
+    }
+
+    // Test fines API
+    async function testFines() {
+      const resultsDiv = document.getElementById('apiResults');
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        resultsDiv.innerHTML = '<div class="status error">❌ No token found. Please login first.</div>';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/fines/my', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          resultsDiv.innerHTML = `
+            <div class="status success">
+              ✅ Fines API Working<br>
+              Total Fines: ${data.length}<br>
+              <pre>${JSON.stringify(data, null, 2)}</pre>
+            </div>
+          `;
+        } else {
+          resultsDiv.innerHTML = `<div class="status error">❌ Status: ${response.status} - ${response.statusText}</div>`;
+        }
+      } catch (error) {
+        resultsDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+      }
+    }
+
+    // Quick actions
+    function loginAsAdmin() {
+      alert('Please use the main login page at / to login as admin');
+      window.location.href = '/';
+    }
+
+    function loginAsStudent() {
+      alert('Please use the main login page at / to login as student');
+      window.location.href = '/';
+    }
+
+    function clearStorage() {
+      localStorage.clear();
+      alert('Storage cleared! Please login again.');
+      testAuth();
+    }
+
+    function goToAdmin() {
+      window.location.href = '/admin-dashboard.html';
+    }
+
+    function goToStudent() {
+      window.location.href = '/student-dashboard.html';
+    }
+
+    // Run tests on load
+    window.onload = function() {
+      checkServer();
+      testAuth();
+    };
+  </script>
+</body>
+</html>

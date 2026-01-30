@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wishlist Debugging Tool</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #007bff;
+      border-radius: 4px;
+    }
+    .button {
+      background: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    .button:hover {
+      background: #0056b3;
+    }
+    .success { color: #28a745; font-weight: bold; }
+    .error { color: #dc3545; font-weight: bold; }
+    .info { color: #17a2b8; }
+    .log {
+      background: #f0f0f0;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #f9f9f9;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Wishlist Debugging Tool</h1>
+    
+    <div class="section">
+      <h2>Step 1: Check Current Session</h2>
+      <button class="button" onclick="checkSession()">Check Token</button>
+      <button class="button" onclick="checkUser()">Check User Info</button>
+      <div id="sessionLog" class="log"></div>
+    </div>
+
+    <div class="section">
+      <h2>Step 2: Test Wishlist Functions</h2>
+      <button class="button" onclick="testGetWishlist()">Get Wishlist</button>
+      <button class="button" onclick="testGetBooks()">Get Books</button>
+      <button class="button" onclick="testAddToWishlist()">Add First Book to Wishlist</button>
+      <button class="button" onclick="testRemoveFromWishlist()">Remove from Wishlist</button>
+      <div id="wishlistLog" class="log"></div>
+    </div>
+
+    <div class="section">
+      <h2>Step 3: Check Function Implementations</h2>
+      <button class="button" onclick="checkFunctionCode()">Check Function Code</button>
+      <div id="funcLog" class="log"></div>
+    </div>
+
+    <div class="section">
+      <h2>Wishlist Items</h2>
+      <div id="wishlistItems"></div>
+    </div>
+  </div>
+
+  <script>
+    let token = localStorage.getItem('token');
+    let userId = localStorage.getItem('userId');
+    let bookId = '';
+    let wishlistIds = [];
+
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const color = type === 'success' ? 'green' : type === 'error' ? 'red' : 'blue';
+      console.log(`[${timestamp}] ${message}`);
+      
+      const logElement = document.getElementById('sessionLog') || document.getElementById('wishlistLog') || document.getElementById('funcLog');
+      if (logElement) {
+        logElement.innerHTML += `<p style="color: ${color};">[${timestamp}] ${message}</p>`;
+      }
+    }
+
+    function checkSession() {
+      const logDiv = document.getElementById('sessionLog');
+      logDiv.innerHTML = '';
+      
+      token = localStorage.getItem('token');
+      userId = localStorage.getItem('userId');
+      
+      if (token) {
+        log(`✅ Token found: ${token.substring(0, 20)}...`, 'success');
+      } else {
+        log('❌ No token found in localStorage', 'error');
+      }
+      
+      if (userId) {
+        log(`✅ User ID: ${userId}`, 'success');
+      } else {
+        log('❌ No User ID found', 'error');
+      }
+    }
+
+    function checkUser() {
+      const logDiv = document.getElementById('sessionLog');
+      logDiv.innerHTML = '';
+      
+      log(`Current User Email: ${localStorage.getItem('userEmail') || 'Not found'}`, 'info');
+      log(`Current User Name: ${localStorage.getItem('userName') || 'Not found'}`, 'info');
+      log(`Current User Role: ${localStorage.getItem('userRole') || 'Not found'}`, 'info');
+    }
+
+    async function testGetBooks() {
+      const logDiv = document.getElementById('wishlistLog');
+      logDiv.innerHTML = '<p>🔄 Loading books...</p>';
+      
+      try {
+        const response = await fetch('/api/books', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const books = await response.json();
+        logDiv.innerHTML += `<p class="success">✅ Found ${books.length} books</p>`;
+        
+        if (books.length > 0) {
+          bookId = books[0]._id;
+          logDiv.innerHTML += `<p>Using book: <strong>${books[0].title}</strong></p>`;
+          logDiv.innerHTML += `<p>ID: ${bookId}</p>`;
+          logDiv.innerHTML += `<p>Available: ${books[0].available}</p>`;
+          
+          logDiv.innerHTML += '<table><tr><th>Title</th><th>Author</th><th>Available</th></tr>';
+          books.slice(0, 5).forEach(b => {
+            logDiv.innerHTML += `<tr><td>${b.title}</td><td>${b.author}</td><td>${b.available}</td></tr>`;
+          });
+          logDiv.innerHTML += '</table>';
+        }
+      } catch (error) {
+        logDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
+      }
+    }
+
+    async function testGetWishlist() {
+      const logDiv = document.getElementById('wishlistLog');
+      logDiv.innerHTML = '<p>🔄 Loading wishlist...</p>';
+      
+      try {
+        const response = await fetch('/api/wishlist', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const wishlist = await response.json();
+        logDiv.innerHTML += `<p class="success">✅ Wishlist has ${wishlist.length} items</p>`;
+        
+        if (wishlist.length > 0) {
+          wishlistIds = wishlist.map(w => w.book._id);
+          logDiv.innerHTML += '<table><tr><th>Title</th><th>Author</th><th>Available</th><th>Added</th></tr>';
+          wishlist.forEach(item => {
+            const date = new Date(item.addedAt).toLocaleDateString();
+            logDiv.innerHTML += `<tr><td>${item.book.title}</td><td>${item.book.author}</td><td>${item.book.available}</td><td>${date}</td></tr>`;
+          });
+          logDiv.innerHTML += '</table>';
+        } else {
+          logDiv.innerHTML += '<p>Your wishlist is empty</p>';
+        }
+      } catch (error) {
+        logDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
+      }
+    }
+
+    async function testAddToWishlist() {
+      const logDiv = document.getElementById('wishlistLog');
+      
+      if (!bookId) {
+        logDiv.innerHTML = '<p class="error">❌ Please load books first</p>';
+        return;
+      }
+      
+      logDiv.innerHTML = '<p>🔄 Adding to wishlist...</p>';
+      
+      try {
+        const response = await fetch('/api/wishlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ bookId })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          logDiv.innerHTML += `<p class="success">✅ Added to wishlist</p>`;
+          logDiv.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        } else {
+          logDiv.innerHTML += `<p class="error">❌ Failed: ${data.message}</p>`;
+        }
+      } catch (error) {
+        logDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
+      }
+    }
+
+    async function testRemoveFromWishlist() {
+      const logDiv = document.getElementById('wishlistLog');
+      
+      if (wishlistIds.length === 0) {
+        logDiv.innerHTML = '<p class="error">❌ No items in wishlist to remove</p>';
+        return;
+      }
+      
+      const bookToRemove = wishlistIds[0];
+      logDiv.innerHTML = `<p>🔄 Removing ${bookToRemove}...</p>`;
+      
+      try {
+        const response = await fetch(`/api/wishlist/${bookToRemove}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          logDiv.innerHTML += `<p class="success">✅ Removed from wishlist</p>`;
+          logDiv.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        } else {
+          logDiv.innerHTML += `<p class="error">❌ Failed: ${data.message}</p>`;
+        }
+      } catch (error) {
+        logDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
+      }
+    }
+
+    function checkFunctionCode() {
+      const logDiv = document.getElementById('funcLog');
+      logDiv.innerHTML = '';
+      
+      // Check if functions exist
+      logDiv.innerHTML += '<h3>Function Availability:</h3>';
+      
+      logDiv.innerHTML += `<p>${typeof loadWishlist === 'function' ? '<span class="success">✅</span>' : '<span class="error">❌</span>'} loadWishlist</p>`;
+      logDiv.innerHTML += `<p>${typeof addToWishlist === 'function' ? '<span class="success">✅</span>' : '<span class="error">❌</span>'} addToWishlist</p>`;
+      logDiv.innerHTML += `<p>${typeof removeFromWishlist === 'function' ? '<span class="success">✅</span>' : '<span class="error">❌</span>'} removeFromWishlist</p>`;
+      logDiv.innerHTML += `<p>${typeof handleStudentNavigation === 'function' ? '<span class="success">✅</span>' : '<span class="error">❌</span>'} handleStudentNavigation</p>`;
+      
+      logDiv.innerHTML += '<h3>Testing Functions:</h3>';
+      
+      try {
+        // Test loadWishlist
+        logDiv.innerHTML += `<p><strong>Testing loadWishlist():</strong></p>`;
+        loadWishlist();
+        logDiv.innerHTML += `<p class="success">✅ Function called successfully</p>`;
+      } catch (error) {
+        logDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>

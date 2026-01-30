@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Dashboard - Full Test</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { color: #0f5132; }
+    .test-section { background: white; padding: 20px; margin: 15px 0; border-radius: 10px; border-left: 4px solid #0f5132; }
+    button { padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+    button:hover { background: #084426; }
+    .result { margin-top: 10px; padding: 10px; background: #f9f9f9; border-radius: 5px; }
+    .success { color: green; }
+    .error { color: red; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background: #0f5132; color: white; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🎓 Student Dashboard - Complete Feature Test</h1>
+  
+  <div class="test-section">
+    <h3>1️⃣ Login as Student</h3>
+    <input type="email" id="studentEmail" placeholder="Email" value="student@test.com" style="padding: 8px; width: 250px;">
+    <input type="password" id="studentPassword" placeholder="Password" value="password123" style="padding: 8px; width: 150px;">
+    <button onclick="loginStudent()">Login as Student</button>
+    <div id="loginResult" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>2️⃣ Test Navigation Routes</h3>
+    <button onclick="testRoute('Dashboard')">Dashboard</button>
+    <button onclick="testRoute('Search Books')">Search Books</button>
+    <button onclick="testRoute('My Books')">My Books</button>
+    <button onclick="testRoute('Issue')">Issue</button>
+    <button onclick="testRoute('Wishlist')">Wishlist</button>
+    <button onclick="testRoute('Fines & Payments')">Fines</button>
+    <button onclick="testRoute('History')">History</button>
+    <button onclick="testRoute('Profile')">Profile</button>
+    <div id="navResult" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>3️⃣ Test Book Operations</h3>
+    <button onclick="testSearchBooks()">Search Books</button>
+    <button onclick="testRequestBook()">Request Book</button>
+    <button onclick="testAddWishlist()">Add to Wishlist</button>
+    <div id="bookOpsResult" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>4️⃣ Test My Books Operations</h3>
+    <button onclick="testMyBooks()">View My Books</button>
+    <button onclick="testMyRequests()">View My Requests</button>
+    <div id="myBooksResult" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>5️⃣ Test Financial Operations</h3>
+    <button onclick="testViewFines()">View Fines</button>
+    <button onclick="testHistory()">Transaction History</button>
+    <div id="financeResult" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>6️⃣ Full Feature Summary</h3>
+    <button onclick="runFullTest()">🚀 Run Complete Test</button>
+    <div id="fullTestResult" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>7️⃣ Quick Access</h3>
+    <button onclick="goToStudentDashboard()">Open Student Dashboard</button>
+    <button onclick="goToAdminDashboard()">Open Admin Dashboard</button>
+  </div>
+</div>
+
+<script>
+let testToken = localStorage.getItem('token');
+
+function log(elementId, msg, isError = false) {
+  const el = document.getElementById(elementId);
+  const div = document.createElement('div');
+  div.className = isError ? 'error' : 'success';
+  div.textContent = msg;
+  el.appendChild(div);
+  console.log(msg);
+}
+
+function clear(elementId) {
+  document.getElementById(elementId).innerHTML = '';
+}
+
+async function loginStudent() {
+  clear('loginResult');
+  const email = document.getElementById('studentEmail').value;
+  const password = document.getElementById('studentPassword').value;
+  
+  try {
+    log('loginResult', '⏳ Logging in...');
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      testToken = data.token;
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      log('loginResult', `✅ Logged in as: ${data.user.email}`);
+      log('loginResult', `✅ Role: ${data.user.role}`);
+      log('loginResult', `✅ Name: ${data.user.name}`);
+    } else {
+      const error = await response.json();
+      log('loginResult', `❌ Login failed: ${error.message}`, true);
+      log('loginResult', '💡 Try registering first or use different credentials');
+    }
+  } catch (error) {
+    log('loginResult', `❌ Error: ${error.message}`, true);
+  }
+}
+
+function testRoute(routeName) {
+  clear('navResult');
+  log('navResult', `✅ Route "${routeName}" is available in sidebar`);
+  log('navResult', `💡 Click on "${routeName}" in the student dashboard to test`);
+}
+
+async function testSearchBooks() {
+  clear('bookOpsResult');
+  
+  if (!testToken) {
+    log('bookOpsResult', '❌ Please login first', true);
+    return;
+  }
+  
+  try {
+    log('bookOpsResult', '⏳ Fetching books...');
+    const response = await fetch('/api/books', {
+      headers: { 'Authorization': 'Bearer ' + testToken }
+    });
+    
+    if (response.ok) {
+      const books = await response.json();
+      log('bookOpsResult', `✅ Found ${books.length} books`);
+      if (books.length > 0) {
+        log('bookOpsResult', `   First book: "${books[0].title}" by ${books[0].author}`);
+        log('bookOpsResult', `   Available: ${books[0].available}/${books[0].quantity}`);
+      }
+    } else {
+      log('bookOpsResult', `❌ Failed: ${response.status}`, true);
+    }
+  } catch (error) {
+    log('bookOpsResult', `❌ Error: ${error.message}`, true);
+  }
+}
+
+async function testRequestBook() {
+  clear('bookOpsResult');
+  
+  if (!testToken) {
+    log('bookOpsResult', '❌ Please login first', true);
+    return;
+  }
+  
+  try {
+    // First get a book ID
+    const booksRes = await fetch('/api/books', {
+      headers: { 'Authorization': 'Bearer ' + testToken }
+    });
+    
+    if (!booksRes.ok) {
+      log('bookOpsResult', '❌ Could not fetch books', true);
+      return;
+    }
+    
+    const books = await booksRes.json();
+    if (books.length === 0) {
+      log('bookOpsResult', '❌ No books available to request', true);
+      return;
+    }
+    
+    const bookId = books[0]._id;
+    log('bookOpsResult', `⏳ Requesting book: ${books[0].title}...`);
+    
+    const response = await fetch('/api/requests/issue', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + testToken
+      },
+      body: JSON.stringify({ bookId })
+    });
+    
+    if (response.ok) {
+      log('bookOpsResult', '✅ Book request submitted successfully!');
+    } else {
+      const error = await response.json();
+      log('bookOpsResult', `⚠️ ${error.message}`, true);
+    }
+  } catch (error) {
+    log('bookOpsResult', `❌ Error: ${error.message}`, true);
+  }
+}
+
+async function testAddWishlist() {
+  clear('bookOpsResult');
+  
+  if (!testToken) {
+    log('bookOpsResult', '❌ Please login first', true);
+    return;
+  }
+  
+  try {
+    const booksRes = await fetch('/api/books', {
+      headers: { 'Authorization': 'Bearer ' + testToken }
+    });
+    
+    if (!booksRes.ok) {
+      log('bookOpsResult', '❌ Could not fetch books', true);
+      return;
+    }
+    
+    const books = await booksRes.json();
+    if (books.length === 0) {
+      log('bookOpsResult', '❌ No books to add to wishlist', true);
+      return;
+    }
+    
+    const bookId = books[0]._id;
+    log('bookOpsResult', `⏳ Adding to wishlist: ${books[0].title}...`);
+    
+    const response = await fetch('/api/wishlist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + testToken
+      },
+      body: JSON.stringify({ bookId })
+    });
+    
+    if (response.ok) {
+      log('bookOpsResult', '✅ Added to wishlist successfully!');
+    } else {
+      const error = await response.json();
+      log('bookOpsResult', `⚠️ ${error.message}`);
+    }
+  } catch (error) {
+    log('bookOpsResult', `❌ Error: ${error.message}`, true);
+  }
+}
+
+async function testMyBooks() {
+  clear('myBooksResult');
+  
+  if (!testToken) {
+    log('myBooksResult', '❌ Please login first', true);
+    return;
+  }
+  
+  try {
+    log('myBooksResult', '⏳ Fetching your books...');
+    const response = await fetch('/api/transactions/my', {
+      headers: { 'Authorization': 'Bearer ' + testToken }
+    });
+    
+    if (response.ok) {
+      const transactions = await response.json();
+      log('myBooksResult', `✅ Found ${transactions.length} transactions`);
+      const issued = transactions.filter(t => t.status === 'issued' || t.status === 'overdue');
+      log('myBooksResult', `   Currently issued: ${issued.length} books`);
+    } else {
+      log('myBooksResult', `❌ Failed: ${response.status}`, true);
+    }
+  } catch (error) {
+    log('myBooksResult', `❌ Error: ${error.message}`, true);
+  }
+}
+
+async function testMyRequests() {
+  clear('myBooksResult');
+  
+  if (!testToken) {
+    log('myBooksResult', '❌ Please login first', true);
+    return;
+  }
+  
+  try {
+    log('myBooksResult', '⏳ Fetching your requests...');
+    const response = await fetch('/api/requests/my', {
+      headers: { 'Authorization': 'Bearer ' + testToken }
+    });
+    
+    if (response.ok) {
+      const requests = await response.json();
+      log('myBooksResult', `✅ Found ${requests.length} requests`);
+      const pending = requests.filter(r => r.status === 'pending');
+      log('myBooksResult', `   Pending: ${pending.length}`);
+    } else {
+      log('myBooksResult', `❌ Failed: ${response.status}`, true);
+    }
+  } catch (error) {
+    log('myBooksResult', `❌ Error: ${error.message}`, true);
+  }
+}
+
+async function testViewFines() {
+  clear('financeResult');
+  
+  if (!testToken) {
+    log('financeResult', '❌ Please login first', true);
+    return;
+  }
+  
+  try {
+    log('financeResult', '⏳ Fetching fines...');
+    const response = await fetch('/api/fines/my', {
+      headers: { 'Authorization': 'Bearer ' + testToken }
+    });
+    
+    if (response.ok) {
+      const fines = await response.json();
+      log('financeResult', `✅ Found ${fines.length} fines`);
+      const unpaid = fines.filter(f => !f.isPaid);
+      const total = unpaid.reduce((sum, f) => sum + f.amount, 0);
+      log('financeResult', `   Unpaid: ${unpaid.length} (Total: $${total.toFixed(2)})`);
+    } else {
+      log('financeResult', `❌ Failed: ${response.status}`, true);
+    }
+  } catch (error) {
+    log('financeResult', `❌ Error: ${error.message}`, true);
+  }
+}
+
+async function testHistory() {
+  clear('financeResult');
+  
+  if (!testToken) {
+    log('financeResult', '❌ Please login first', true);
+    return;
+  }
+  
+  try {
+    log('financeResult', '⏳ Fetching transaction history...');
+    const response = await fetch('/api/transactions/my', {
+      headers: { 'Authorization': 'Bearer ' + testToken }
+    });
+    
+    if (response.ok) {
+      const transactions = await response.json();
+      log('financeResult', `✅ Found ${transactions.length} total transactions`);
+      const returned = transactions.filter(t => t.status === 'returned');
+      log('financeResult', `   Returned: ${returned.length}`);
+    } else {
+      log('financeResult', `❌ Failed: ${response.status}`, true);
+    }
+  } catch (error) {
+    log('financeResult', `❌ Error: ${error.message}`, true);
+  }
+}
+
+async function runFullTest() {
+  clear('fullTestResult');
+  log('fullTestResult', '🚀 Starting complete feature test...\n');
+  
+  await new Promise(r => setTimeout(r, 500));
+  await testSearchBooks();
+  await new Promise(r => setTimeout(r, 500));
+  await testMyBooks();
+  await new Promise(r => setTimeout(r, 500));
+  await testMyRequests();
+  await new Promise(r => setTimeout(r, 500));
+  await testViewFines();
+  
+  log('fullTestResult', '\n✅ All tests completed!');
+  log('fullTestResult', '💡 Check individual sections above for detailed results');
+}
+
+function goToStudentDashboard() {
+  window.open('/student-dashboard.html', '_blank');
+}
+
+function goToAdminDashboard() {
+  window.open('/admin-dashboard.html', '_blank');
+}
+</script>
+
+</body>
+</html>

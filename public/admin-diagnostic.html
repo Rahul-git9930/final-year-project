@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel Quick Test</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background: #f0f0f0; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .box { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #0f5132; }
+    .error { border-left-color: red; }
+    button { padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 10px 5px 10px 0; }
+    button:hover { background: #084426; }
+    .result { margin-top: 10px; padding: 10px; background: #f9f9f9; border-radius: 5px; font-family: monospace; }
+    .success { color: green; }
+    .fail { color: red; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🔧 Admin Panel Diagnostic</h1>
+  
+  <div class="box">
+    <h3>Step 1: Check Login Status</h3>
+    <button onclick="checkLogin()">Check Login</button>
+    <div id="step1" class="result"></div>
+  </div>
+
+  <div class="box">
+    <h3>Step 2: Test API Connection</h3>
+    <button onclick="testAPI()">Test API</button>
+    <div id="step2" class="result"></div>
+  </div>
+
+  <div class="box">
+    <h3>Step 3: Load Admin Dashboard</h3>
+    <button onclick="goToAdmin()">Go to Admin Dashboard</button>
+    <button onclick="testAdminScript()">Test Script Load</button>
+    <div id="step3" class="result"></div>
+  </div>
+
+  <div class="box">
+    <h3>Step 4: Manual Login</h3>
+    <input type="email" id="email" placeholder="Email" value="rahulwaditake1@gmail.com" style="padding: 8px; width: 250px;">
+    <input type="password" id="password" placeholder="Password" value="password123" style="padding: 8px; width: 150px;">
+    <button onclick="login()">Login as Admin</button>
+    <div id="step4" class="result"></div>
+  </div>
+
+  <div class="box">
+    <h3>Step 5: Database Check</h3>
+    <button onclick="checkDatabase()">Check DB</button>
+    <div id="step5" class="result"></div>
+  </div>
+</div>
+
+<script>
+function log(elementId, msg, isError = false) {
+  const el = document.getElementById(elementId);
+  const span = document.createElement('div');
+  span.textContent = msg;
+  span.className = isError ? 'fail' : 'success';
+  el.appendChild(span);
+  console.log(msg);
+}
+
+function checkLogin() {
+  const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+  
+  const el = document.getElementById('step1');
+  el.innerHTML = '';
+  
+  if (!token) {
+    log('step1', '❌ No token - not logged in', true);
+    return false;
+  }
+  
+  log('step1', '✅ Token found: ' + token.substring(0, 30) + '...');
+  
+  if (!user) {
+    log('step1', '❌ No user data', true);
+    return false;
+  }
+  
+  try {
+    const userData = JSON.parse(user);
+    log('step1', '✅ User: ' + userData.email);
+    log('step1', '✅ Role: ' + userData.role);
+    return userData.role === 'admin' || userData.role === 'librarian';
+  } catch (e) {
+    log('step1', '❌ Invalid user JSON: ' + e.message, true);
+    return false;
+  }
+}
+
+async function testAPI() {
+  const el = document.getElementById('step2');
+  el.innerHTML = '';
+  
+  const token = localStorage.getItem('token');
+  if (!token) {
+    log('step2', '❌ No token', true);
+    return;
+  }
+  
+  try {
+    log('step2', '⏳ Calling /api/dashboard/stats...');
+    const response = await fetch('/api/dashboard/stats', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    
+    log('step2', '✅ Response: ' + response.status + ' ' + response.statusText);
+    
+    if (response.ok) {
+      const data = await response.json();
+      log('step2', '✅ Data: ' + JSON.stringify(data).substring(0, 100) + '...');
+    } else {
+      const text = await response.text();
+      log('step2', '❌ Error: ' + text.substring(0, 100), true);
+    }
+  } catch (e) {
+    log('step2', '❌ Error: ' + e.message, true);
+  }
+}
+
+function goToAdmin() {
+  window.location.href = '/admin-dashboard.html';
+}
+
+function testAdminScript() {
+  const el = document.getElementById('step3');
+  el.innerHTML = '';
+  
+  // Check if script is loaded
+  if (typeof loadDashboard === 'function') {
+    log('step3', '✅ admin-dashboard.js loaded');
+    log('step3', '✅ loadDashboard function exists');
+  } else {
+    log('step3', '❌ admin-dashboard.js NOT loaded', true);
+  }
+  
+  if (typeof fetchWithTimeout === 'function') {
+    log('step3', '✅ fetchWithTimeout exists');
+  } else {
+    log('step3', '❌ fetchWithTimeout NOT found', true);
+  }
+}
+
+async function login() {
+  const el = document.getElementById('step4');
+  el.innerHTML = '';
+  
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  if (!email || !password) {
+    log('step4', '❌ Email and password required', true);
+    return;
+  }
+  
+  try {
+    log('step4', '⏳ Logging in...');
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      log('step4', '✅ Login successful!');
+      log('step4', '✅ Token: ' + data.token.substring(0, 30) + '...');
+      log('step4', '✅ User: ' + data.user.email + ' (Role: ' + data.user.role + ')');
+      log('step4', '➡️ Now try "Load Admin Dashboard"');
+    } else {
+      const error = await response.json();
+      log('step4', '❌ Login failed: ' + (error.message || response.statusText), true);
+    }
+  } catch (e) {
+    log('step4', '❌ Error: ' + e.message, true);
+  }
+}
+
+async function checkDatabase() {
+  const el = document.getElementById('step5');
+  el.innerHTML = '';
+  
+  const token = localStorage.getItem('token');
+  if (!token) {
+    log('step5', '⏳ Checking without auth...');
+  }
+  
+  try {
+    log('step5', '⏳ Checking /api/books...');
+    const booksRes = await fetch('/api/books', {
+      headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+    });
+    
+    if (booksRes.ok) {
+      const books = await booksRes.json();
+      log('step5', '✅ Books: ' + books.length + ' records');
+    } else {
+      log('step5', '❌ Books API error: ' + booksRes.status, true);
+    }
+    
+    log('step5', '⏳ Checking /api/users...');
+    const usersRes = await fetch('/api/users', {
+      headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+    });
+    
+    if (usersRes.ok) {
+      const users = await usersRes.json();
+      log('step5', '✅ Users: ' + users.length + ' records');
+    } else {
+      log('step5', '❌ Users API error: ' + usersRes.status, true);
+    }
+  } catch (e) {
+    log('step5', '❌ Error: ' + e.message, true);
+  }
+}
+
+console.log('🔧 Diagnostic page loaded');
+</script>
+
+</body>
+</html>

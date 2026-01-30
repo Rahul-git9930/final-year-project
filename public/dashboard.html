@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Library Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+    <h2>📚 LibraryMS</h2>
+    <ul id="sidebarMenu">
+      <li class="active">Dashboard</li>
+      <li>Books</li>
+      <li>Users</li>
+      <li>Transactions</li>
+      <li>Fines</li>
+      <li>Reports</li>
+      <li>Settings</li>
+    </ul>
+    <div class="account">
+      <div id="userInfo">
+        <p>admin@library.com</p>
+        <small>Role: Admin</small>
+      </div>
+      <button onclick="logout()" style="margin-top: 10px; width: 100%; padding: 8px; background: #198754; border: none; color: white; border-radius: 5px; cursor: pointer;">Logout</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <h1>Dashboard</h1>
+    <p>Welcome back, Admin User!</p>
+
+    <div class="cards">
+      <div class="card">Total Books<br><b>2</b></div>
+      <div class="card">Total Members<br><b>1</b></div>
+      <div class="card">Books Issued<br><b>0</b></div>
+      <div class="card">Pending Fines<br><b>$0.00</b></div>
+    </div>
+
+    <h2>Quick Actions</h2>
+    <div class="actions">
+      <button>Add Book</button>
+      <button>Issue Book</button>
+      <button>Add Member</button>
+      <button>View Reports</button>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Wishlist Structure Test</title>
+</head>
+<body>
+  <h1>Testing Wishlist API Response Structure</h1>
+  <button onclick="testAPI()">Test API</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function testAPI() {
+      const output = document.getElementById('output');
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        output.textContent = 'No token found. Please login first.';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/wishlist', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        const data = await response.json();
+        output.textContent = JSON.stringify(data, null, 2);
+
+        if (Array.isArray(data) && data.length > 0) {
+          console.log('First wishlist item structure:', data[0]);
+          const item = data[0];
+          
+          let structure = '\n\nStructure breakdown:\n';
+          structure += `- item._id: ${item._id}\n`;
+          structure += `- item.user: ${item.user}\n`;
+          structure += `- item.addedAt: ${item.addedAt}\n`;
+          structure += `- item.book: ${typeof item.book}\n`;
+          
+          if (item.book) {
+            structure += `  - item.book._id: ${item.book._id}\n`;
+            structure += `  - item.book.title: ${item.book.title}\n`;
+            structure += `  - item.book.author: ${item.book.author}\n`;
+            structure += `  - item.book.category: ${item.book.category}\n`;
+            structure += `  - item.book.available: ${item.book.available}\n`;
+            structure += `  - item.book.quantity: ${item.book.quantity}\n`;
+          }
+          
+          output.textContent += structure;
+        }
+      } catch (error) {
+        output.textContent = `Error: ${error.message}`;
+      }
+    }
+  </script>
+</body>
+</html>

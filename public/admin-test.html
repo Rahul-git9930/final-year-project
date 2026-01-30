@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel - Debug Test</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+    .test { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #ddd; }
+    .pass { border-left-color: green; }
+    .fail { border-left-color: red; }
+    .pending { border-left-color: orange; }
+    h1 { color: #333; }
+    button { padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+    button:hover { background: #084426; }
+    .result { padding: 10px; margin-top: 10px; border-radius: 5px; }
+    .result.ok { background: #d4edda; color: #155724; }
+    .result.error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+
+<h1>🔧 Admin Panel Diagnostic Test</h1>
+
+<div class="test pending">
+  <h3>1. Check Authentication</h3>
+  <button onclick="checkAuth()">Check Token & User</button>
+  <div id="authResult"></div>
+</div>
+
+<div class="test pending">
+  <h3>2. Check Admin Role</h3>
+  <button onclick="checkRole()">Verify Admin Role</button>
+  <div id="roleResult"></div>
+</div>
+
+<div class="test pending">
+  <h3>3. Test API Connection</h3>
+  <button onclick="testAPI()">Test /api/dashboard/stats</button>
+  <div id="apiResult"></div>
+</div>
+
+<div class="test pending">
+  <h3>4. Check Admin Dashboard File</h3>
+  <button onclick="checkDashboard()">Check admin-dashboard.js</button>
+  <div id="dashResult"></div>
+</div>
+
+<div class="test pending">
+  <h3>5. Full Admin Panel Load</h3>
+  <button onclick="loadFullDashboard()">Load Admin Dashboard</button>
+  <div id="fullResult"></div>
+</div>
+
+<div class="test">
+  <h3>6. Direct Navigation</h3>
+  <button onclick="goToAdmin()">Go to Admin Dashboard</button>
+  <button onclick="logout()">Logout</button>
+  <button onclick="goToLogin()">Go to Login</button>
+</div>
+
+<script>
+function log(elementId, message, isError = false) {
+  const el = document.getElementById(elementId);
+  const div = document.createElement('div');
+  div.className = 'result ' + (isError ? 'error' : 'ok');
+  div.textContent = message;
+  el.appendChild(div);
+  console.log(message);
+}
+
+function checkAuth() {
+  const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+  
+  if (!token) {
+    log('authResult', '❌ No token found! User not logged in.', true);
+    return false;
+  }
+  
+  if (!user) {
+    log('authResult', '❌ No user data found!', true);
+    return false;
+  }
+  
+  try {
+    const userData = JSON.parse(user);
+    log('authResult', `✅ Token found (${token.substring(0, 20)}...)`);
+    log('authResult', `✅ User: ${userData.name} (${userData.email})`);
+    return true;
+  } catch (e) {
+    log('authResult', `❌ Invalid user data: ${e.message}`, true);
+    return false;
+  }
+}
+
+function checkRole() {
+  const user = localStorage.getItem('user');
+  if (!user) {
+    log('roleResult', '❌ No user data found', true);
+    return false;
+  }
+  
+  try {
+    const userData = JSON.parse(user);
+    if (userData.role === 'admin' || userData.role === 'librarian') {
+      log('roleResult', `✅ User role is: ${userData.role}`);
+      return true;
+    } else {
+      log('roleResult', `❌ User role is: ${userData.role} (need admin or librarian)`, true);
+      return false;
+    }
+  } catch (e) {
+    log('roleResult', `❌ Error: ${e.message}`, true);
+    return false;
+  }
+}
+
+async function testAPI() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    log('apiResult', '❌ No token available', true);
+    return;
+  }
+  
+  try {
+    log('apiResult', '⏳ Testing API connection...');
+    const response = await fetch('/api/dashboard/stats', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      log('apiResult', `✅ API connected! Got stats:`, false);
+      log('apiResult', `   Total Books: ${data.totalBooks}`);
+      log('apiResult', `   Total Members: ${data.totalMembers}`);
+    } else {
+      log('apiResult', `❌ API error: ${response.status} ${response.statusText}`, true);
+      const text = await response.text();
+      log('apiResult', `   Response: ${text.substring(0, 100)}`, true);
+    }
+  } catch (e) {
+    log('apiResult', `❌ Error: ${e.message}`, true);
+  }
+}
+
+function checkDashboard() {
+  if (typeof loadDashboard === 'function') {
+    log('dashResult', '✅ admin-dashboard.js is loaded');
+    log('dashResult', '✅ loadDashboard function exists');
+  } else {
+    log('dashResult', '❌ admin-dashboard.js not loaded or loadDashboard not found', true);
+  }
+  
+  if (typeof fetchWithTimeout === 'function') {
+    log('dashResult', '✅ fetchWithTimeout function exists');
+  } else {
+    log('dashResult', '❌ fetchWithTimeout not found', true);
+  }
+}
+
+async function loadFullDashboard() {
+  try {
+    log('fullResult', '⏳ Loading admin dashboard...');
+    
+    if (typeof loadDashboard !== 'function') {
+      log('fullResult', '❌ loadDashboard function not available', true);
+      return;
+    }
+    
+    await loadDashboard();
+    log('fullResult', '✅ Dashboard loaded successfully!');
+  } catch (e) {
+    log('fullResult', `❌ Error: ${e.message}`, true);
+  }
+}
+
+function goToAdmin() {
+  window.location.href = '/admin-dashboard.html';
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  log('fullResult', '✅ Logged out. Redirecting to login...');
+  setTimeout(() => window.location.href = '/', 1000);
+}
+
+function goToLogin() {
+  window.location.href = '/';
+}
+
+// Auto-check on load
+console.log('=== Admin Panel Diagnostic Test Started ===');
+console.log('Window location:', window.location.href);
+checkAuth();
+checkRole();
+</script>
+
+</body>
+</html>
