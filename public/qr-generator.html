@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate QR Codes - Admin</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    .qr-container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .qr-card {
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+      background: #f8f9fa;
+    }
+    
+    .qr-card h3 {
+      font-size: 14px;
+      margin: 10px 0 5px 0;
+      color: #333;
+    }
+    
+    .qr-card p {
+      font-size: 12px;
+      color: #666;
+      margin: 5px 0;
+    }
+    
+    .qr-code-img {
+      margin: 10px 0;
+      display: inline-block;
+    }
+    
+    .download-btn {
+      padding: 8px 16px;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    
+    .download-btn:hover {
+      background: #4338ca;
+    }
+    
+    .print-btn {
+      padding: 12px 24px;
+      background: #198754;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 20px 0;
+    }
+    
+    .back-btn {
+      padding: 10px 20px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    
+    .generate-options {
+      margin: 20px 0;
+      padding: 15px;
+      background: #e7f3ff;
+      border-radius: 8px;
+    }
+    
+    .generate-options select,
+    .generate-options button {
+      margin: 5px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+    
+    @media print {
+      .no-print {
+        display: none;
+      }
+      
+      .qr-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="qr-container">
+    <a href="admin-dashboard.html" class="back-btn no-print">← Back to Dashboard</a>
+    
+    <h1>📱 Generate Book QR Codes</h1>
+    <p>Generate QR codes for books to enable quick scanning during book issue</p>
+    
+    <div class="generate-options no-print">
+      <label>
+        <strong>Select Books:</strong>
+        <select id="bookFilter">
+          <option value="all">All Books</option>
+          <option value="available">Available Only</option>
+          <option value="category">By Category</option>
+        </select>
+      </label>
+      
+      <label id="categorySelect" style="display: none;">
+        <select id="categoryFilter">
+          <option value="">Select Category</option>
+        </select>
+      </label>
+      
+      <button class="download-btn" onclick="generateQRCodes()">Generate QR Codes</button>
+      <button class="print-btn" onclick="window.print()">🖨️ Print All QR Codes</button>
+    </div>
+    
+    <div id="qrGrid" class="qr-grid"></div>
+  </div>
+
+  <script src="common.js"></script>
+  <script>
+    let books = [];
+    let categories = [];
+
+    async function loadBooks() {
+      const token = localStorage.getItem('token');
+      
+      try {
+        const response = await fetch('/api/books', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (response.ok) {
+          books = await response.json();
+          
+          // Extract unique categories
+          categories = [...new Set(books.map(b => b.category).filter(c => c))];
+          
+          // Populate category dropdown
+          const categoryFilter = document.getElementById('categoryFilter');
+          categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = cat;
+            categoryFilter.appendChild(option);
+          });
+          
+          // Generate QR codes for all books by default
+          generateQRCodes();
+        }
+      } catch (error) {
+        console.error('Error loading books:', error);
+        alert('Failed to load books');
+      }
+    }
+
+    function generateQRCodes() {
+      const filter = document.getElementById('bookFilter').value;
+      const categoryValue = document.getElementById('categoryFilter').value;
+      
+      let filteredBooks = books;
+      
+      if (filter === 'available') {
+        filteredBooks = books.filter(b => b.availableCopies > 0);
+      } else if (filter === 'category' && categoryValue) {
+        filteredBooks = books.filter(b => b.category === categoryValue);
+      }
+      
+      const grid = document.getElementById('qrGrid');
+      grid.innerHTML = '';
+      
+      if (filteredBooks.length === 0) {
+        grid.innerHTML = '<p>No books found</p>';
+        return;
+      }
+      
+      filteredBooks.forEach(book => {
+        const card = document.createElement('div');
+        card.className = 'qr-card';
+        card.id = `qr-${book._id}`;
+        
+        card.innerHTML = `
+          <h3>${book.title}</h3>
+          <p>${book.author}</p>
+          <div class="qr-code-img" id="qrcode-${book._id}"></div>
+          <p><strong>ISBN:</strong> ${book.isbn || book._id}</p>
+          <p><strong>ID:</strong> ${book._id.substring(0, 8)}...</p>
+          <button class="download-btn no-print" onclick="downloadQRCode('${book._id}', '${book.title}')">
+            ⬇️ Download
+          </button>
+        `;
+        
+        grid.appendChild(card);
+        
+        // Generate QR code
+        new QRCode(document.getElementById(`qrcode-${book._id}`), {
+          text: book.isbn || book._id,
+          width: 150,
+          height: 150,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      });
+    }
+
+    function downloadQRCode(bookId, bookTitle) {
+      const qrCodeImg = document.querySelector(`#qrcode-${bookId} img`);
+      
+      if (!qrCodeImg) {
+        alert('QR code not found');
+        return;
+      }
+      
+      const link = document.createElement('a');
+      link.download = `QR-${bookTitle.replace(/\s+/g, '_')}.png`;
+      link.href = qrCodeImg.src;
+      link.click();
+    }
+
+    // Filter change handlers
+    document.getElementById('bookFilter').addEventListener('change', function() {
+      const categorySelect = document.getElementById('categorySelect');
+      if (this.value === 'category') {
+        categorySelect.style.display = 'inline';
+      } else {
+        categorySelect.style.display = 'none';
+        generateQRCodes();
+      }
+    });
+
+    document.getElementById('categoryFilter').addEventListener('change', function() {
+      generateQRCodes();
+    });
+
+    // Check authentication
+    if (!localStorage.getItem('token')) {
+      alert('Please login first');
+      window.location.href = 'index.html';
+    }
+
+    // Load books on page load
+    loadBooks();
+  </script>
+</body>
+</html>

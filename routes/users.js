@@ -4,6 +4,55 @@ const auth = require('../middleware/auth');
 const roleAuth = require('../middleware/roleAuth');
 const User = require('../models/User');
 
+// @route   GET /api/users/email-verification-stats
+// @desc    Get email verification statistics
+// @access  Private (Admin only)
+router.get('/email-verification-stats', [auth, roleAuth('admin')], async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const verifiedUsers = await User.countDocuments({ emailVerified: true });
+    const unverifiedUsers = totalUsers - verifiedUsers;
+    
+    // Get score distribution
+    const scoreRanges = [
+      { label: 'Excellent (90-100)', min: 90, max: 100 },
+      { label: 'Good (70-89)', min: 70, max: 89 },
+      { label: 'Fair (50-69)', min: 50, max: 69 },
+      { label: 'Poor (1-49)', min: 1, max: 49 },
+      { label: 'Not Verified (0)', min: 0, max: 0 }
+    ];
+    
+    const distribution = await Promise.all(
+      scoreRanges.map(async (range) => ({
+        range: range.label,
+        count: await User.countDocuments({
+          emailVerificationScore: { $gte: range.min, $lte: range.max }
+        })
+      }))
+    );
+
+    // Get recent registrations with verification info
+    const recentUsers = await User.find()
+      .select('name email emailVerified emailVerificationScore createdAt')
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.json({
+      summary: {
+        totalUsers,
+        verifiedUsers,
+        unverifiedUsers,
+        verificationRate: totalUsers > 0 ? ((verifiedUsers / totalUsers) * 100).toFixed(2) : 0
+      },
+      scoreDistribution: distribution,
+      recentUsers
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
 // @route   GET /api/users
 // @desc    Get all users
 // @access  Private (Admin/Librarian only)

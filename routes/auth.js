@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const emailVerificationService = require('../services/emailVerification');
 
 // @route   POST /api/auth/register
 // @desc    Register a new user
@@ -13,6 +14,37 @@ router.post('/register', async (req, res) => {
     const adminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
     const normalizedEmail = (email || '').toLowerCase();
     const isAdminEmail = adminEmail && normalizedEmail === adminEmail;
+
+    // Verify email using external service
+    let emailVerificationResult;
+    try {
+      emailVerificationResult = await emailVerificationService.verifyEmail(email);
+      
+      // Check if email is valid based on verification result
+      if (!emailVerificationResult.valid) {
+        return res.status(400).json({ 
+          message: 'Invalid or undeliverable email address',
+          details: emailVerificationResult.details.reason || 'Email verification failed'
+        });
+      }
+
+      // Optional: Set minimum score threshold (e.g., 50)
+      const minScore = parseInt(process.env.EMAIL_MIN_SCORE) || 50;
+      if (emailVerificationResult.score < minScore) {
+        return res.status(400).json({ 
+          message: 'Email quality score too low',
+          details: `Email verification score: ${emailVerificationResult.score}. Minimum required: ${minScore}`
+        });
+      }
+    } catch (verificationError) {
+      console.error('Email verification error:', verificationError);
+      // If verification fails, continue with registration but log the error
+      emailVerificationResult = {
+        valid: true,
+        score: 0,
+        details: { reason: 'Verification service unavailable' }
+      };
+    }
 
     // Check if user exists
     let user = await User.findOne({ email });
@@ -25,7 +57,10 @@ router.post('/register', async (req, res) => {
       name,
       email,
       password,
-      role: isAdminEmail ? 'admin' : (role || 'member')
+      role: isAdminEmail ? 'admin' : (role || 'member'),
+      emailVerified: emailVerificationResult.valid,
+      emailVerificationScore: emailVerificationResult.score,
+      emailVerificationDetails: emailVerificationResult.details
     });
 
     // Hash password

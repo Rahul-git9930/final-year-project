@@ -179,6 +179,9 @@
       <div class="form-group">
         <label for="email">Email Address *</label>
         <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+        <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">
+          ✓ Email will be verified for deliverability
+        </small>
       </div>
 
       <div class="form-row">
@@ -262,7 +265,11 @@
             window.location.href = '/';
           }, 2000);
         } else {
-          errorDiv.textContent = result.message || 'Registration failed. Please try again.';
+          // Show detailed error message if available
+          const errorMessage = result.details 
+            ? `${result.message}: ${result.details}` 
+            : result.message || 'Registration failed. Please try again.';
+          errorDiv.textContent = errorMessage;
           errorDiv.style.display = 'block';
         }
       } catch (error) {

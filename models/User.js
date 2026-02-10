@@ -33,6 +33,18 @@ const UserSchema = new mongoose.Schema({
   address: {
     type: String
   },
+  emailVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailVerificationScore: {
+    type: Number,
+    default: 0
+  },
+  emailVerificationDetails: {
+    type: Object,
+    default: {}
+  },
   createdAt: {
     type: Date,
     default: Date.now

@@ -1545,6 +1545,9 @@ function handleStudentNavigation(page) {
     case 'My Books':
       loadMyBooks();
       break;
+    case '📱 Scan QR Code':
+      window.location.href = '/qr-scanner.html';
+      break;
     case 'Wishlist':
       loadWishlist();
       break;
@@ -1594,8 +1597,12 @@ async function loadSearchBooks() {
         <button onclick="performSearch()" style="width: 100%; padding: 12px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Search</button>
       </div>
 
+      <div style="margin-bottom: 15px; color: #666;">
+        <strong>Showing ${books.length} books</strong>
+      </div>
+
       <div id="booksGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
-        ${books.slice(0, 12).map(book => `
+        ${books.length > 0 ? books.map(book => `
           <div style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: 0.3s;">
             <h3 style="margin: 0 0 5px 0; color: #0f5132;">${book.title}</h3>
             <p style="margin: 5px 0; color: #666; font-size: 14px;"><strong>by</strong> ${book.author}</p>
@@ -1611,7 +1618,7 @@ async function loadSearchBooks() {
               <button onclick="viewBookDetails('${book._id}')" style="padding: 8px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer;">Details</button>
             </div>
           </div>
-        `).join('')}
+        `).join('') : '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No books found.</p>'}
       </div>
     `;
   } catch (error) {
@@ -1907,7 +1914,7 @@ async function payFine(fineId) {
   
   try {
     // First get the fine details
-    const fineResponse = await fetch(`/api/fines`, {
+    const fineResponse = await fetch(`/api/fines/my`, {
       method: 'GET',
       headers: {
         'Authorization': 'Bearer ' + token
@@ -1931,6 +1938,7 @@ async function payFine(fineId) {
     if (typeof paymentHandler !== 'undefined') {
       try {
         await paymentHandler.payFine(fine.amount, `Fine Payment - ${fine.reason}`);
+        loadStudentFines(); // Reload after payment
       } catch (error) {
         console.error('Payment error:', error);
         alert('❌ Payment failed: ' + error.message);
@@ -2266,9 +2274,10 @@ async function viewBookDetails(bookId) {
             <p>${book.description}</p>
           ` : ''}
 
-          <button onclick="requestBook('${book._id}')" style="margin-top: 20px; padding: 12px 30px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%;">
-            ${book.available > 0 ? 'Request This Book' : 'Add to Wishlist'}
-          </button>
+          ${book.available > 0 ? 
+            `<button onclick="requestBook('${book._id}')" style="margin-top: 20px; padding: 12px 30px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%;">Request This Book</button>` :
+            `<button onclick="addToWishlist('${book._id}')" style="margin-top: 20px; padding: 12px 30px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%;">Add to Wishlist</button>`
+          }
         </div>
       </div>
 

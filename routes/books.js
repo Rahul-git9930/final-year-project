@@ -151,4 +151,41 @@ router.delete('/:id', [auth, roleAuth('admin')], async (req, res) => {
   }
 });
 
+// @route   GET /api/books/scan/:identifier
+// @desc    Get book by ISBN or ID for QR scanning
+// @access  Private
+router.get('/scan/:identifier', auth, async (req, res) => {
+  try {
+    const { identifier } = req.params;
+    
+    // Try to find by ISBN first, then by _id
+    let book = await Book.findOne({ isbn: identifier });
+    
+    if (!book) {
+      // Try finding by MongoDB ID
+      if (identifier.match(/^[0-9a-fA-F]{24}$/)) {
+        book = await Book.findById(identifier);
+      }
+    }
+    
+    if (!book) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Book not found. Invalid QR code or Book ID.' 
+      });
+    }
+    
+    res.json({
+      success: true,
+      book: book
+    });
+  } catch (err) {
+    console.error('Error scanning book:', err.message);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error processing scan' 
+    });
+  }
+});
+
 module.exports = router;
