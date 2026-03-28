@@ -1,6 +1,7 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard Comprehensive Test</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
@@ -23,10 +24,11 @@
     .function-list li.exists { border-left-color: #198754; }
     .function-list li.missing { border-left-color: #dc3545; }
   </style>
+  <link rel="stylesheet" href="responsive.css">
 </head>
 <body>
   <div class="container">
-    <h1>🧪 Admin Dashboard - Comprehensive Test Suite</h1>
+    <h1>ðŸ§ª Admin Dashboard - Comprehensive Test Suite</h1>
     
     <div class="test-section">
       <h2>Navigation Test</h2>
@@ -70,12 +72,12 @@
       try {
         if (typeof handleNavigation === 'function') {
           handleNavigation(page);
-          resultDiv.innerHTML = `<div class="result success">✅ Navigation to '${page}' works</div>`;
+          resultDiv.innerHTML = `<div class="result success">âœ… Navigation to '${page}' works</div>`;
         } else {
-          resultDiv.innerHTML = `<div class="result error">❌ handleNavigation function not found</div>`;
+          resultDiv.innerHTML = `<div class="result error">âŒ handleNavigation function not found</div>`;
         }
       } catch (error) {
-        resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+        resultDiv.innerHTML = `<div class="result error">âŒ Error: ${error.message}</div>`;
       }
     }
 
@@ -99,7 +101,7 @@
         const exists = typeof window[func] === 'function';
         if (exists) foundCount++;
         html += `<li class="${exists ? 'exists' : 'missing'}">
-          ${exists ? '✅' : '❌'} ${func}
+          ${exists ? 'âœ…' : 'âŒ'} ${func}
         </li>`;
       });
 
@@ -111,7 +113,7 @@
     async function testAPIs() {
       const resultDiv = document.getElementById('apiResult');
       if (!token) {
-        resultDiv.innerHTML = `<div class="result error">❌ No token found - please login first</div>`;
+        resultDiv.innerHTML = `<div class="result error">âŒ No token found - please login first</div>`;
         return;
       }
 
@@ -134,12 +136,12 @@
           const response = await fetch(api, {
             headers: { 'Authorization': 'Bearer ' + token }
           });
-          const status = response.ok ? '✅' : '⚠️';
+          const status = response.ok ? 'âœ…' : 'âš ï¸';
           const className = response.ok ? 'success' : 'warning';
           if (response.ok) working++;
           html += `<div class="result ${className}">${status} ${api} (${response.status})</div>`;
         } catch (error) {
-          html += `<div class="result error">❌ ${api} - ${error.message}</div>`;
+          html += `<div class="result error">âŒ ${api} - ${error.message}</div>`;
         }
       }
 
@@ -168,7 +170,7 @@
         html += `<tr>
           <td><strong>${section}</strong></td>
           <td>${btnList.join('<br>')}</td>
-          <td><span style="color: #198754;">✅ Implemented</span></td>
+          <td><span style="color: #198754;">âœ… Implemented</span></td>
         </tr>`;
       }
 
@@ -178,3 +180,4 @@
   </script>
 </body>
 </html>
+

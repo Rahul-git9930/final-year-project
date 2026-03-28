@@ -9,13 +9,13 @@
 /* ===== BODY ===== */
 body {
   background: #f4f6fb;
-  height: 100vh;
+  min-height: 100dvh;
 }
 
 /* ===== LAYOUT ===== */
 .layout {
   display: flex;
-  height: 100vh;
+  min-height: 100dvh;
 }
 
 /* ===== SIDEBAR ===== */
@@ -73,7 +73,7 @@ body {
 /* ===== MAIN CONTENT ===== */
 .content {
   flex: 1;
-  padding: 25px;
+  padding: clamp(14px, 2.8vw, 25px);
   overflow-y: auto;
 }
 
@@ -143,11 +143,24 @@ body {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
   .sidebar {
-    width: 200px;
+    width: 100%;
+    padding: 14px;
   }
 
   .content {
-    padding: 15px;
+    padding: 14px;
+  }
+
+  .cards {
+    gap: 12px;
+  }
+
+  .card {
+    padding: 14px;
   }
 }

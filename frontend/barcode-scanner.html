@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -152,19 +152,20 @@
       display: inline-block;
     }
   </style>
+  <link rel="stylesheet" href="responsive.css">
 </head>
 <body>
   <div class="scanner-container">
-    <a href="student-dashboard.html" class="back-btn">← Back to Dashboard</a>
+    <a href="student-dashboard.html" class="back-btn">â† Back to Dashboard</a>
     
-    <h1>📱 Scan Book Barcode</h1>
+    <h1>ðŸ“± Scan Book Barcode</h1>
     <p>Position the barcode within the camera frame to scan</p>
     
     <div id="barcode-scanner"></div>
     
     <div class="scanner-controls">
-      <button class="start-btn" onclick="startScanner()">📷 Start Scanner</button>
-      <button class="stop-btn" onclick="stopScanner()">⏹️ Stop Scanner</button>
+      <button class="start-btn" onclick="startScanner()">ðŸ“· Start Scanner</button>
+      <button class="stop-btn" onclick="stopScanner()">â¹ï¸ Stop Scanner</button>
     </div>
     
     <div id="scanResult" class="scan-result"></div>
@@ -277,7 +278,7 @@
       stopScanner();
       
       // Show loading
-      showMessage('📖 Fetching book details...', 'success');
+      showMessage('ðŸ“– Fetching book details...', 'success');
       
       // Fetch book details
       await fetchBookDetails(code);
@@ -308,11 +309,11 @@
         scannedBookData = data.book;
         
         displayBookPreview(scannedBookData);
-        showMessage('✅ Book found! Review details below.', 'success');
+        showMessage('âœ… Book found! Review details below.', 'success');
         
       } catch (error) {
         console.error('Error fetching book:', error);
-        showMessage('❌ ' + error.message, 'error');
+        showMessage('âŒ ' + error.message, 'error');
         scannedBookData = null;
       }
     }
@@ -325,7 +326,7 @@
         return;
       }
       
-      showMessage('📖 Searching for book...', 'success');
+      showMessage('ðŸ“– Searching for book...', 'success');
       await fetchBookDetails(bookId);
     }
 
@@ -341,7 +342,7 @@
         <div class="book-info"><strong>Available:</strong> ${book.available || 0} / ${book.quantity || 0}</div>
         <div class="book-info"><strong>Status:</strong> 
           <span style="color: ${(book.available || 0) > 0 ? '#198754' : '#dc3545'}; font-weight: bold;">
-            ${(book.available || 0) > 0 ? '✅ Available' : '❌ Not Available'}
+            ${(book.available || 0) > 0 ? 'âœ… Available' : 'âŒ Not Available'}
           </span>
         </div>
       `;
@@ -399,7 +400,7 @@
 
         const result = await response.json();
         
-        showMessage('✅ Book issued successfully! Redirecting...', 'success');
+        showMessage('âœ… Book issued successfully! Redirecting...', 'success');
         
         // Hide book preview
         document.getElementById('bookPreview').style.display = 'none';
@@ -412,7 +413,7 @@
         
       } catch (error) {
         console.error('Error issuing book:', error);
-        showMessage('❌ ' + error.message, 'error');
+        showMessage('âŒ ' + error.message, 'error');
       }
     }
 
@@ -437,3 +438,4 @@
   </script>
 </body>
 </html>
+

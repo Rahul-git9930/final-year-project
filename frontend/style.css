@@ -7,11 +7,11 @@
 
 body {
   background: #dcdcdc;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 }
 
 .container {
@@ -26,7 +26,7 @@ body {
 
 .form-panel {
   background: #f4f4f4;
-  padding: 34px;
+  padding: clamp(18px, 3vw, 34px);
   display: flex;
   align-items: center;
 }
@@ -99,7 +99,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px;
+  padding: clamp(18px, 3vw, 32px);
 }
 
 .overlay-panel {
@@ -153,7 +153,7 @@ body {
 
 @media (max-width: 640px) {
   .form-panel {
-    padding: 24px;
+    padding: 16px;
   }
 
   .auth-form h2 {

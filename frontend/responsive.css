@@ -1,0 +1,90 @@
+/* Global responsive spacing and mobile safety rules */
+:root {
+  --device-pad: clamp(10px, 2.8vw, 24px);
+  --device-gap: clamp(10px, 2vw, 20px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+table {
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .dashboard,
+  .layout,
+  .container {
+    gap: var(--device-gap);
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    margin: 0;
+  }
+
+  .layout,
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .container,
+  .dashboard,
+  .layout,
+  .content,
+  .sidebar,
+  .form-panel,
+  .overlay,
+  .test-section,
+  .test,
+  .route-card,
+  .signup-container {
+    max-width: 100%;
+  }
+
+  .content,
+  .sidebar,
+  .form-panel,
+  .overlay,
+  .test-section,
+  .test,
+  .route-card {
+    padding: var(--device-pad);
+  }
+
+  .cards {
+    gap: 12px;
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    gap: 10px;
+  }
+
+  .actions button,
+  button {
+    width: 100%;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

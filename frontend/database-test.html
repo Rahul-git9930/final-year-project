@@ -1,6 +1,7 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Database Connection Test</title>
   <style>
     body { font-family: Arial; margin: 40px; background: #f5f5f5; }
@@ -14,54 +15,55 @@
     .success { color: green; font-weight: bold; }
     .error-text { color: red; font-weight: bold; }
   </style>
+  <link rel="stylesheet" href="responsive.css">
 </head>
 <body>
 
 <div class="container">
-  <h1>🔍 Database & API Connection Test</h1>
+  <h1>ðŸ” Database & API Connection Test</h1>
   <p>Click each button to test different API endpoints and database connection</p>
 
   <div class="test-section">
-    <h3>1️⃣ Test Registration & Login</h3>
+    <h3>1ï¸âƒ£ Test Registration & Login</h3>
     <button onclick="testRegister()">Test Register</button>
     <button onclick="testLogin()">Test Login</button>
     <div id="auth-result" class="result"></div>
   </div>
 
   <div class="test-section">
-    <h3>2️⃣ Test Books API</h3>
+    <h3>2ï¸âƒ£ Test Books API</h3>
     <button onclick="testBooks()">Get All Books</button>
     <button onclick="testAddBook()">Add Test Book (Admin)</button>
     <div id="books-result" class="result"></div>
   </div>
 
   <div class="test-section">
-    <h3>3️⃣ Test Users API</h3>
+    <h3>3ï¸âƒ£ Test Users API</h3>
     <button onclick="testUsers()">Get All Users (Admin)</button>
     <div id="users-result" class="result"></div>
   </div>
 
   <div class="test-section">
-    <h3>4️⃣ Test Dashboard API</h3>
+    <h3>4ï¸âƒ£ Test Dashboard API</h3>
     <button onclick="testDashboard()">Get Dashboard Stats (Admin)</button>
     <div id="dashboard-result" class="result"></div>
   </div>
 
   <div class="test-section">
-    <h3>5️⃣ Test Book Requests API</h3>
+    <h3>5ï¸âƒ£ Test Book Requests API</h3>
     <button onclick="testRequests()">Get Book Requests (Admin)</button>
     <div id="requests-result" class="result"></div>
   </div>
 
   <div class="test-section">
-    <h3>6️⃣ Test Transactions API</h3>
+    <h3>6ï¸âƒ£ Test Transactions API</h3>
     <button onclick="testTransactions()">Get Transactions</button>
     <div id="transactions-result" class="result"></div>
   </div>
 
   <div class="test-section">
-    <h3>7️⃣ Full System Test</h3>
-    <button onclick="runFullTest()">🚀 Run All Tests</button>
+    <h3>7ï¸âƒ£ Full System Test</h3>
+    <button onclick="runFullTest()">ðŸš€ Run All Tests</button>
     <div id="full-result" class="result"></div>
   </div>
 </div>
@@ -89,7 +91,7 @@ async function testRegister() {
   const testEmail = `test${timestamp}@test.com`;
   
   try {
-    log('auth-result', '⏳ Testing registration...');
+    log('auth-result', 'â³ Testing registration...');
     const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -103,17 +105,17 @@ async function testRegister() {
     const data = await response.json();
     
     if (response.ok) {
-      log('auth-result', '✅ Registration successful!');
+      log('auth-result', 'âœ… Registration successful!');
       log('auth-result', `   User: ${data.user.email}`);
       log('auth-result', `   Role: ${data.user.role}`);
       testToken = data.token;
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
     } else {
-      log('auth-result', `❌ Registration failed: ${data.message}`, true);
+      log('auth-result', `âŒ Registration failed: ${data.message}`, true);
     }
   } catch (error) {
-    log('auth-result', `❌ Error: ${error.message}`, true);
+    log('auth-result', `âŒ Error: ${error.message}`, true);
   }
 }
 
@@ -121,7 +123,7 @@ async function testLogin() {
   clearResult('auth-result');
   
   try {
-    log('auth-result', '⏳ Testing login with admin account...');
+    log('auth-result', 'â³ Testing login with admin account...');
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -134,7 +136,7 @@ async function testLogin() {
     const data = await response.json();
     
     if (response.ok) {
-      log('auth-result', '✅ Login successful!');
+      log('auth-result', 'âœ… Login successful!');
       log('auth-result', `   User: ${data.user.email}`);
       log('auth-result', `   Role: ${data.user.role}`);
       log('auth-result', `   Token: ${data.token.substring(0, 30)}...`);
@@ -142,10 +144,10 @@ async function testLogin() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
     } else {
-      log('auth-result', `❌ Login failed: ${data.message}`, true);
+      log('auth-result', `âŒ Login failed: ${data.message}`, true);
     }
   } catch (error) {
-    log('auth-result', `❌ Error: ${error.message}`, true);
+    log('auth-result', `âŒ Error: ${error.message}`, true);
   }
 }
 
@@ -153,22 +155,22 @@ async function testBooks() {
   clearResult('books-result');
   
   try {
-    log('books-result', '⏳ Fetching books from database...');
+    log('books-result', 'â³ Fetching books from database...');
     const response = await fetch('/api/books', {
       headers: testToken ? { 'Authorization': 'Bearer ' + testToken } : {}
     });
     
     if (response.ok) {
       const books = await response.json();
-      log('books-result', `✅ Found ${books.length} books in database`);
+      log('books-result', `âœ… Found ${books.length} books in database`);
       if (books.length > 0) {
         log('books-result', `   First book: "${books[0].title}" by ${books[0].author}`);
       }
     } else {
-      log('books-result', `❌ API Error: ${response.status} ${response.statusText}`, true);
+      log('books-result', `âŒ API Error: ${response.status} ${response.statusText}`, true);
     }
   } catch (error) {
-    log('books-result', `❌ Error: ${error.message}`, true);
+    log('books-result', `âŒ Error: ${error.message}`, true);
   }
 }
 
@@ -176,12 +178,12 @@ async function testAddBook() {
   clearResult('books-result');
   
   if (!testToken) {
-    log('books-result', '❌ Please login first (click Test Login button)', true);
+    log('books-result', 'âŒ Please login first (click Test Login button)', true);
     return;
   }
   
   try {
-    log('books-result', '⏳ Adding test book...');
+    log('books-result', 'â³ Adding test book...');
     const response = await fetch('/api/books', {
       method: 'POST',
       headers: {
@@ -200,14 +202,14 @@ async function testAddBook() {
     
     if (response.ok) {
       const book = await response.json();
-      log('books-result', '✅ Book added successfully!');
+      log('books-result', 'âœ… Book added successfully!');
       log('books-result', `   Title: ${book.title}`);
     } else {
       const error = await response.json();
-      log('books-result', `❌ Failed: ${error.message || response.statusText}`, true);
+      log('books-result', `âŒ Failed: ${error.message || response.statusText}`, true);
     }
   } catch (error) {
-    log('books-result', `❌ Error: ${error.message}`, true);
+    log('books-result', `âŒ Error: ${error.message}`, true);
   }
 }
 
@@ -215,27 +217,27 @@ async function testUsers() {
   clearResult('users-result');
   
   if (!testToken) {
-    log('users-result', '❌ Please login first', true);
+    log('users-result', 'âŒ Please login first', true);
     return;
   }
   
   try {
-    log('users-result', '⏳ Fetching users from database...');
+    log('users-result', 'â³ Fetching users from database...');
     const response = await fetch('/api/users', {
       headers: { 'Authorization': 'Bearer ' + testToken }
     });
     
     if (response.ok) {
       const users = await response.json();
-      log('users-result', `✅ Found ${users.length} users in database`);
+      log('users-result', `âœ… Found ${users.length} users in database`);
       const admins = users.filter(u => u.role === 'admin' || u.role === 'librarian');
       log('users-result', `   Admins/Librarians: ${admins.length}`);
       log('users-result', `   Students: ${users.length - admins.length}`);
     } else {
-      log('users-result', `❌ API Error: ${response.status} ${response.statusText}`, true);
+      log('users-result', `âŒ API Error: ${response.status} ${response.statusText}`, true);
     }
   } catch (error) {
-    log('users-result', `❌ Error: ${error.message}`, true);
+    log('users-result', `âŒ Error: ${error.message}`, true);
   }
 }
 
@@ -243,28 +245,28 @@ async function testDashboard() {
   clearResult('dashboard-result');
   
   if (!testToken) {
-    log('dashboard-result', '❌ Please login first', true);
+    log('dashboard-result', 'âŒ Please login first', true);
     return;
   }
   
   try {
-    log('dashboard-result', '⏳ Fetching dashboard stats...');
+    log('dashboard-result', 'â³ Fetching dashboard stats...');
     const response = await fetch('/api/dashboard/stats', {
       headers: { 'Authorization': 'Bearer ' + testToken }
     });
     
     if (response.ok) {
       const stats = await response.json();
-      log('dashboard-result', '✅ Dashboard API working!');
+      log('dashboard-result', 'âœ… Dashboard API working!');
       log('dashboard-result', `   Total Books: ${stats.totalBooks}`);
       log('dashboard-result', `   Total Members: ${stats.totalMembers}`);
       log('dashboard-result', `   Books Issued: ${stats.booksIssued}`);
       log('dashboard-result', `   Available Books: ${stats.availableBooks}`);
     } else {
-      log('dashboard-result', `❌ API Error: ${response.status} ${response.statusText}`, true);
+      log('dashboard-result', `âŒ API Error: ${response.status} ${response.statusText}`, true);
     }
   } catch (error) {
-    log('dashboard-result', `❌ Error: ${error.message}`, true);
+    log('dashboard-result', `âŒ Error: ${error.message}`, true);
   }
 }
 
@@ -272,26 +274,26 @@ async function testRequests() {
   clearResult('requests-result');
   
   if (!testToken) {
-    log('requests-result', '❌ Please login first', true);
+    log('requests-result', 'âŒ Please login first', true);
     return;
   }
   
   try {
-    log('requests-result', '⏳ Fetching book requests...');
+    log('requests-result', 'â³ Fetching book requests...');
     const response = await fetch('/api/requests', {
       headers: { 'Authorization': 'Bearer ' + testToken }
     });
     
     if (response.ok) {
       const requests = await response.json();
-      log('requests-result', `✅ Found ${requests.length} book requests`);
+      log('requests-result', `âœ… Found ${requests.length} book requests`);
       const pending = requests.filter(r => r.status === 'pending');
       log('requests-result', `   Pending: ${pending.length}`);
     } else {
-      log('requests-result', `❌ API Error: ${response.status} ${response.statusText}`, true);
+      log('requests-result', `âŒ API Error: ${response.status} ${response.statusText}`, true);
     }
   } catch (error) {
-    log('requests-result', `❌ Error: ${error.message}`, true);
+    log('requests-result', `âŒ Error: ${error.message}`, true);
   }
 }
 
@@ -299,57 +301,58 @@ async function testTransactions() {
   clearResult('transactions-result');
   
   if (!testToken) {
-    log('transactions-result', '❌ Please login first', true);
+    log('transactions-result', 'âŒ Please login first', true);
     return;
   }
   
   try {
-    log('transactions-result', '⏳ Fetching transactions...');
+    log('transactions-result', 'â³ Fetching transactions...');
     const response = await fetch('/api/transactions', {
       headers: { 'Authorization': 'Bearer ' + testToken }
     });
     
     if (response.ok) {
       const transactions = await response.json();
-      log('transactions-result', `✅ Found ${transactions.length} transactions`);
+      log('transactions-result', `âœ… Found ${transactions.length} transactions`);
     } else {
-      log('transactions-result', `❌ API Error: ${response.status} ${response.statusText}`, true);
+      log('transactions-result', `âŒ API Error: ${response.status} ${response.statusText}`, true);
     }
   } catch (error) {
-    log('transactions-result', `❌ Error: ${error.message}`, true);
+    log('transactions-result', `âŒ Error: ${error.message}`, true);
   }
 }
 
 async function runFullTest() {
   clearResult('full-result');
-  log('full-result', '🚀 Starting full system test...\n');
+  log('full-result', 'ðŸš€ Starting full system test...\n');
   
   await testLogin();
   await new Promise(r => setTimeout(r, 500));
   
-  log('full-result', '\n📚 Testing Books API...');
+  log('full-result', '\nðŸ“š Testing Books API...');
   await testBooks();
   await new Promise(r => setTimeout(r, 500));
   
-  log('full-result', '\n👥 Testing Users API...');
+  log('full-result', '\nðŸ‘¥ Testing Users API...');
   await testUsers();
   await new Promise(r => setTimeout(r, 500));
   
-  log('full-result', '\n📊 Testing Dashboard API...');
+  log('full-result', '\nðŸ“Š Testing Dashboard API...');
   await testDashboard();
   await new Promise(r => setTimeout(r, 500));
   
-  log('full-result', '\n📬 Testing Requests API...');
+  log('full-result', '\nðŸ“¬ Testing Requests API...');
   await testRequests();
   
-  log('full-result', '\n✅ All tests completed!');
+  log('full-result', '\nâœ… All tests completed!');
 }
 
 // Check if already logged in
 if (testToken) {
-  console.log('✅ Found existing token');
+  console.log('âœ… Found existing token');
 }
 </script>
 
 </body>
 </html>
+
