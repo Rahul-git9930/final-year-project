@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generate QR Codes - Admin</title>
+  <title>Generate Barcodes - Admin</title>
   <link rel="stylesheet" href="dashboard.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
-    .qr-container {
+    .barcode-container {
       max-width: 800px;
       margin: 20px auto;
       padding: 20px;
@@ -16,14 +16,14 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
-    .qr-grid {
+    .barcode-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 20px;
       margin-top: 20px;
     }
     
-    .qr-card {
+    .barcode-card {
       padding: 15px;
       border: 1px solid #ddd;
       border-radius: 8px;
@@ -31,19 +31,19 @@
       background: #f8f9fa;
     }
     
-    .qr-card h3 {
+    .barcode-card h3 {
       font-size: 14px;
       margin: 10px 0 5px 0;
       color: #333;
     }
     
-    .qr-card p {
+    .barcode-card p {
       font-size: 12px;
       color: #666;
       margin: 5px 0;
     }
     
-    .qr-code-img {
+    .barcode-img {
       margin: 10px 0;
       display: inline-block;
     }
@@ -106,7 +106,7 @@
         display: none;
       }
       
-      .qr-card {
+      .barcode-card {
         break-inside: avoid;
         page-break-inside: avoid;
       }
@@ -114,11 +114,11 @@
   </style>
 </head>
 <body>
-  <div class="qr-container">
+  <div class="barcode-container">
     <a href="admin-dashboard.html" class="back-btn no-print">← Back to Dashboard</a>
     
-    <h1>📱 Generate Book QR Codes</h1>
-    <p>Generate QR codes for books to enable quick scanning during book issue</p>
+    <h1>📱 Generate Book Barcodes</h1>
+    <p>Generate barcodes for books to enable quick scanning during book issue</p>
     
     <div class="generate-options no-print">
       <label>
@@ -136,11 +136,11 @@
         </select>
       </label>
       
-      <button class="download-btn" onclick="generateQRCodes()">Generate QR Codes</button>
-      <button class="print-btn" onclick="window.print()">🖨️ Print All QR Codes</button>
+      <button class="download-btn" onclick="generateBarcodes()">Generate Barcodes</button>
+      <button class="print-btn" onclick="window.print()">🖨️ Print All Barcodes</button>
     </div>
     
-    <div id="qrGrid" class="qr-grid"></div>
+    <div id="barcodeGrid" class="barcode-grid"></div>
   </div>
 
   <script src="common.js"></script>
@@ -173,8 +173,8 @@
             categoryFilter.appendChild(option);
           });
           
-          // Generate QR codes for all books by default
-          generateQRCodes();
+          // Generate barcodes for all books by default
+          generateBarcodes();
         }
       } catch (error) {
         console.error('Error loading books:', error);
@@ -182,19 +182,19 @@
       }
     }
 
-    function generateQRCodes() {
+    function generateBarcodes() {
       const filter = document.getElementById('bookFilter').value;
       const categoryValue = document.getElementById('categoryFilter').value;
       
       let filteredBooks = books;
       
       if (filter === 'available') {
-        filteredBooks = books.filter(b => b.availableCopies > 0);
+        filteredBooks = books.filter(b => b.available > 0);
       } else if (filter === 'category' && categoryValue) {
         filteredBooks = books.filter(b => b.category === categoryValue);
       }
-      
-      const grid = document.getElementById('qrGrid');
+
+      const grid = document.getElementById('barcodeGrid');
       grid.innerHTML = '';
       
       if (filteredBooks.length === 0) {
@@ -204,46 +204,35 @@
       
       filteredBooks.forEach(book => {
         const card = document.createElement('div');
-        card.className = 'qr-card';
-        card.id = `qr-${book._id}`;
+        card.className = 'barcode-card';
         
-        card.innerHTML = `
-          <h3>${book.title}</h3>
-          <p>${book.author}</p>
-          <div class="qr-code-img" id="qrcode-${book._id}"></div>
-          <p><strong>ISBN:</strong> ${book.isbn || book._id}</p>
-          <p><strong>ID:</strong> ${book._id.substring(0, 8)}...</p>
-          <button class="download-btn no-print" onclick="downloadQRCode('${book._id}', '${book.title}')">
-            ⬇️ Download
-          </button>
-        `;
+        const title = document.createElement('h3');
+        title.textContent = book.title;
+        
+        const author = document.createElement('p');
+        author.textContent = `by ${book.author}`;
+        
+        const isbn = document.createElement('p');
+        isbn.textContent = `ISBN: ${book.isbn}`;
+        
+        const barcodeImg = document.createElement('svg');
+        barcodeImg.id = `barcode-${book._id}`;
+        
+        card.appendChild(title);
+        card.appendChild(author);
+        card.appendChild(isbn);
+        card.appendChild(barcodeImg);
         
         grid.appendChild(card);
         
-        // Generate QR code
-        new QRCode(document.getElementById(`qrcode-${book._id}`), {
-          text: book.isbn || book._id,
-          width: 150,
-          height: 150,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.H
+        JsBarcode(`#barcode-${book._id}`, book.isbn || book._id, {
+          format: "CODE128",
+          displayValue: true,
+          fontSize: 14,
+          width: 1.5,
+          height: 50,
         });
       });
-    }
-
-    function downloadQRCode(bookId, bookTitle) {
-      const qrCodeImg = document.querySelector(`#qrcode-${bookId} img`);
-      
-      if (!qrCodeImg) {
-        alert('QR code not found');
-        return;
-      }
-      
-      const link = document.createElement('a');
-      link.download = `QR-${bookTitle.replace(/\s+/g, '_')}.png`;
-      link.href = qrCodeImg.src;
-      link.click();
     }
 
     // Filter change handlers
@@ -253,12 +242,12 @@
         categorySelect.style.display = 'inline';
       } else {
         categorySelect.style.display = 'none';
-        generateQRCodes();
+        generateBarcodes();
       }
     });
 
     document.getElementById('categoryFilter').addEventListener('change', function() {
-      generateQRCodes();
+      generateBarcodes();
     });
 
     // Check authentication

@@ -193,7 +193,7 @@ router.get('/overdue', [auth, roleAuth('admin', 'librarian')], async (req, res) 
 });
 
 // @route   POST /api/transactions/issue-scan
-// @desc    Issue book via QR scan
+// @desc    Issue book via barcode scan
 // @access  Private (Student)
 router.post('/issue-scan', auth, async (req, res) => {
   try {

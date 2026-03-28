@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Scanner - Issue Book</title>
+  <title>Barcode Scanner - Issue Book</title>
   <link rel="stylesheet" href="dashboard.css">
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
   <style>
     .scanner-container {
       max-width: 600px;
@@ -16,10 +16,22 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
-    #reader {
+    #barcode-scanner {
       border: 2px solid #4f46e5;
       border-radius: 8px;
       overflow: hidden;
+      position: relative;
+    }
+    
+    #barcode-scanner video {
+      width: 100%;
+      height: auto;
+    }
+    
+    #barcode-scanner .drawingBuffer {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
     
     .scanner-controls {
@@ -145,10 +157,10 @@
   <div class="scanner-container">
     <a href="student-dashboard.html" class="back-btn">← Back to Dashboard</a>
     
-    <h1>📱 Scan Book QR Code</h1>
-    <p>Position the QR code within the camera frame to scan</p>
+    <h1>📱 Scan Book Barcode</h1>
+    <p>Position the barcode within the camera frame to scan</p>
     
-    <div id="reader"></div>
+    <div id="barcode-scanner"></div>
     
     <div class="scanner-controls">
       <button class="start-btn" onclick="startScanner()">📷 Start Scanner</button>
@@ -173,55 +185,93 @@
 
   <script src="common.js"></script>
   <script>
-    let html5QrcodeScanner = null;
     let scannedBookData = null;
 
     function startScanner() {
-      if (html5QrcodeScanner) {
-        showMessage('Scanner is already running', 'error');
-        return;
-      }
-
-      const reader = document.getElementById('reader');
-      
-      html5QrcodeScanner = new Html5Qrcode("reader");
-      
-      Html5Qrcode.getCameras().then(cameras => {
-        if (cameras && cameras.length) {
-          html5QrcodeScanner.start(
-            { facingMode: "environment" },
-            {
-              fps: 10,
-              qrbox: { width: 250, height: 250 }
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: document.querySelector('#barcode-scanner'),
+                constraints: {
+                    width: 480,
+                    height: 320,
+                    facingMode: "environment"
+                },
             },
-            onScanSuccess,
-            onScanFailure
-          ).catch(err => {
-            console.error('Error starting scanner:', err);
-            showMessage('Failed to start camera. Please check permissions.', 'error');
-          });
-        } else {
-          showMessage('No cameras found on this device', 'error');
-        }
-      }).catch(err => {
-        console.error('Error getting cameras:', err);
-        showMessage('Camera permission denied or unavailable', 'error');
-      });
+            decoder: {
+                readers: [
+                    "code_128_reader",
+                    "ean_reader",
+                    "ean_8_reader",
+                    "code_39_reader",
+                    "code_39_vin_reader",
+                    "codabar_reader",
+                    "upc_reader",
+                    "upc_e_reader",
+                    "i2of5_reader"
+                ],
+                debug: {
+                    showCanvas: false,
+                    showPatches: false,
+                    showFoundPatches: false,
+                    showSkeleton: false,
+                    showLabels: false,
+                    showPatchLabels: false,
+                    showRemainingPatchLabels: false,
+                    boxFromPatches: {
+                        showTransformed: false,
+                        showTransformedBox: false,
+                        showBB: false
+                    }
+                }
+            },
+
+        }, function (err) {
+            if (err) {
+                console.log(err);
+                return
+            }
+
+            console.log("Initialization finished. Ready to start");
+            Quagga.start();
+        });
+
+        Quagga.onProcessed(function (result) {
+            var drawingCtx = Quagga.canvas.ctx.overlay,
+                drawingCanvas = Quagga.canvas.dom.overlay;
+
+            if (result) {
+                if (result.boxes) {
+                    drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
+                    result.boxes.filter(function (box) {
+                        return box !== result.box;
+                    }).forEach(function (box) {
+                        Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, { color: "green", lineWidth: 2 });
+                    });
+                }
+
+                if (result.box) {
+                    Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: "#00F", lineWidth: 2 });
+                }
+
+                if (result.codeResult && result.codeResult.code) {
+                    Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, { color: 'red', lineWidth: 3 });
+                }
+            }
+        });
+
+
+        Quagga.onDetected(onScanSuccess);
     }
 
     function stopScanner() {
-      if (html5QrcodeScanner) {
-        html5QrcodeScanner.stop().then(() => {
-          html5QrcodeScanner = null;
-          showMessage('Scanner stopped', 'success');
-        }).catch(err => {
-          console.error('Error stopping scanner:', err);
-        });
-      }
+      Quagga.stop();
     }
 
-    async function onScanSuccess(decodedText, decodedResult) {
-      console.log('Scanned:', decodedText);
+    async function onScanSuccess(result) {
+      var code = result.codeResult.code;
+      console.log('Scanned:', code);
       
       // Stop scanner after successful scan
       stopScanner();
@@ -230,7 +280,7 @@
       showMessage('📖 Fetching book details...', 'success');
       
       // Fetch book details
-      await fetchBookDetails(decodedText);
+      await fetchBookDetails(code);
     }
 
     function onScanFailure(error) {

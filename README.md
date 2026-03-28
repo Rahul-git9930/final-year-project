@@ -112,12 +112,13 @@ Users | Books | Transactions | Fines | BookRequests | Wishlist | Reviews | Notif
 
 ```
 project/
-├── public/          # Frontend (5 HTML, 5 JS, 2 CSS)
-├── routes/          # Backend API routes (10 sets)
-├── models/          # Database models (8)
-├── server.js        # Express server
+├── frontend/        # Frontend (HTML, CSS, JS)
+├── backend/         # Express API server
+│   ├── routes/      # Backend API routes
+│   ├── models/      # Database models
+│   └── server.js    # Express server entry
 ├── package.json     # Dependencies
-├── .env             # Environment config
+├── backend/.env     # Backend environment config
 └── *.md             # Documentation
 ```
 
@@ -219,12 +220,12 @@ HTML5 | CSS3 | Vanilla JavaScript | Fetch API
 Node.js | Express.js | MongoDB | Mongoose | bcryptjs | JWT
 
 ### Key Files
-- Frontend Logic: `public/dashboard.js`
-- Authentication: `public/auth.js`
-- Utilities: `public/common.js`
-- Server: `server.js`
-- Routes: `routes/` folder
-- Models: `models/` folder
+- Frontend Logic: `frontend/dashboard.js`
+- Authentication: `frontend/auth.js`
+- Utilities: `frontend/common.js`
+- Server: `backend/server.js`
+- Routes: `backend/routes/` folder
+- Models: `backend/models/` folder
 
 ---
 

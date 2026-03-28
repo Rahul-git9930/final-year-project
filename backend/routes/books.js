@@ -152,7 +152,7 @@ router.delete('/:id', [auth, roleAuth('admin')], async (req, res) => {
 });
 
 // @route   GET /api/books/scan/:identifier
-// @desc    Get book by ISBN or ID for QR scanning
+// @desc    Get book by ISBN or ID for barcode scanning
 // @access  Private
 router.get('/scan/:identifier', auth, async (req, res) => {
   try {
@@ -171,7 +171,7 @@ router.get('/scan/:identifier', auth, async (req, res) => {
     if (!book) {
       return res.status(404).json({ 
         success: false,
-        message: 'Book not found. Invalid QR code or Book ID.' 
+        message: 'Book not found. Invalid barcode or Book ID.' 
       });
     }
     

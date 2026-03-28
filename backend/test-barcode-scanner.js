@@ -1,5 +1,5 @@
-// QR Scanner Feature Test Script
-// Run this with: node test-qr-scanner.js
+// Barcode Scanner Feature Test Script
+// Run this with: node test-barcode-scanner.js
 
 const BASE_URL = 'http://localhost:5000';
 let authToken = '';
@@ -213,7 +213,7 @@ async function testInvalidBookID() {
 
 // Run all tests
 async function runAllTests() {
-  log('🚀 Starting QR Scanner Feature Tests...', 'blue');
+  log('🚀 Starting Barcode Scanner Feature Tests...', 'blue');
   log('==========================================\n', 'blue');
 
   // Test 1: Login
@@ -255,7 +255,7 @@ async function runAllTests() {
 
   // Summary
   log('\n==========================================', 'blue');
-  log('✅ All QR Scanner Tests Completed!', 'green');
+  log('✅ All Barcode Scanner Tests Completed!', 'green');
   log('==========================================\n', 'blue');
 }
 

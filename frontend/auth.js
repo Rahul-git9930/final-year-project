@@ -1,9 +1,6 @@
-// Handle Login Form
 document.addEventListener('DOMContentLoaded', function() {
   const loginForm = document.getElementById('loginForm');
-  const signupForm = document.getElementById('signupForm');
 
-  // Login Handler
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -44,40 +41,4 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-
-  // Signup Handler
-  if (signupForm) {
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const formData = new FormData(signupForm);
-      const userData = Object.fromEntries(formData);
-
-      try {
-        const response = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(userData)
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          alert('Registration successful! Please login.');
-          toggle(); // Switch to login form
-        } else {
-          alert(data.message || 'Registration failed');
-        }
-      } catch (error) {
-        console.error('Registration error:', error);
-        alert('An error occurred during registration');
-      }
-    });
-  }
 });
-
-function toggle() {
-  document.getElementById("container").classList.toggle("active");
-}

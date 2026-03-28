@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LibraryHub Auth</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="form-panel">
+    <form id="loginForm" class="auth-form">
+      <h2>Login</h2>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+      <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+    </form>
+  </div>
+
+  <div class="overlay">
+    <div class="overlay-panel">
+      <h1>Welcome to LibraryHub</h1>
+      <p>Manage books easily and sync instantly.</p>
+      <a class="ghost" href="/signup">Switch</a>
+    </div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+
+</body>
+</html>

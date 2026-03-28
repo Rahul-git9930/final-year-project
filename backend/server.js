@@ -3,19 +3,23 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 // Load environment variables
-dotenv.config();
+const backendEnvPath = path.join(__dirname, '.env');
+const rootEnvPath = path.join(__dirname, '..', '.env');
+dotenv.config({ path: fs.existsSync(backendEnvPath) ? backendEnvPath : rootEnvPath });
 
 const app = express();
+const frontendDir = path.join(__dirname, '..', 'frontend');
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static frontend files from the separated frontend folder
+app.use(express.static(frontendDir));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -27,27 +31,27 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Routes
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(frontendDir, 'index.html'));
 });
 
 app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+  res.sendFile(path.join(frontendDir, 'signup.html'));
 });
 
 app.get('/admin-dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html'));
+  res.sendFile(path.join(frontendDir, 'admin-dashboard.html'));
 });
 
 app.get('/student-dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'student-dashboard.html'));
+  res.sendFile(path.join(frontendDir, 'student-dashboard.html'));
 });
 
 app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+  res.sendFile(path.join(frontendDir, 'dashboard.html'));
 });
 
 app.get('/routes', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'routes.html'));
+  res.sendFile(path.join(frontendDir, 'routes.html'));
 });
 
 // API Routes (to be implemented)

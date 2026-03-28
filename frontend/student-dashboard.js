@@ -1545,8 +1545,8 @@ function handleStudentNavigation(page) {
     case 'My Books':
       loadMyBooks();
       break;
-    case '📱 Scan QR Code':
-      window.location.href = '/qr-scanner.html';
+    case '📱 Scan Barcode':
+      window.location.href = '/barcode-scanner.html';
       break;
     case 'Wishlist':
       loadWishlist();

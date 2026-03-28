@@ -4,6 +4,44 @@
 
 console.log('✅ admin-dashboard.js loaded successfully!');
 
+// ================== REMOVE USER (GLOBAL SCOPE) ==================
+async function removeUser(userId) {
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  if (userId === user.id) {
+    alert("❌ You cannot remove yourself.");
+    return;
+  }
+
+  if (!confirm('Are you sure you want to remove this member? This action cannot be undone.')) {
+    return;
+  }
+
+  console.log(`🗑️ Attempting to remove user ${userId}...`);
+
+  try {
+    const response = await fetchWithTimeout(`/api/users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `API error: ${response.status}`);
+    }
+
+    console.log(`✅ User ${userId} removed successfully.`);
+    alert('✅ Member removed successfully.');
+    loadUsers(); // Refresh the user list
+  } catch (error) {
+    console.error('❌ Error removing user:', error);
+    alert(`❌ Error: ${error.message}`);
+  }
+}
+
 // ================== FETCH PENDING REQUESTS COUNT ==================
 async function updateRequestBadge() {
   const token = localStorage.getItem('token');
@@ -264,6 +302,7 @@ async function loadUsers() {
                   <td style="padding: 15px;"><span style="color: ${u.isActive ? 'green' : 'red'};">${u.isActive ? '✅ Active' : '❌ Inactive'}</span></td>
                   <td style="padding: 15px; text-align: center;">
                     <button onclick="viewUserDetails('${u._id}')" style="padding: 5px 10px; background: #0d6efd; color: white; border: none; border-radius: 5px; cursor: pointer;">View</button>
+                    <button data-user-id="${u._id}" class="remove-user-btn" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 5px;">Remove</button>
                   </td>
                 </tr>
               `).join('')}
@@ -272,6 +311,14 @@ async function loadUsers() {
         ` : '<p>📭 No users found.</p>'}
       </div>
     `;
+
+    // Add event listeners for the remove buttons
+    document.querySelectorAll('.remove-user-btn').forEach(button => {
+      button.addEventListener('click', (event) => {
+        const userId = event.target.getAttribute('data-user-id');
+        removeUser(userId);
+      });
+    });
   } catch (error) {
     console.error('❌ Error loading users:', error);
     content.innerHTML = `<h1>Users Management</h1><p>❌ Error: ${error.message}</p>`;
@@ -541,8 +588,8 @@ function handleNavigation(page) {
     case 'Payments':
       loadPayments();
       break;
-    case '📱 Generate QR Codes':
-      window.location.href = '/qr-generator.html';
+    case '📱 Generate Barcodes':
+      window.location.href = '/barcode-generator.html';
       break;
     case 'Book Requests':
       loadRequests();

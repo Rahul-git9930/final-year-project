@@ -157,7 +157,7 @@ router.put('/:id/toggle-status', [auth, roleAuth('admin')], async (req, res) => 
 });
 
 // @route   DELETE /api/users/:id
-// @desc    Delete user
+// @desc    Delete a user
 // @access  Private (Admin only)
 router.delete('/:id', [auth, roleAuth('admin')], async (req, res) => {
   try {
@@ -167,10 +167,17 @@ router.delete('/:id', [auth, roleAuth('admin')], async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    await User.findByIdAndDelete(req.params.id);
-    res.json({ message: 'User deleted' });
+    // Optional: Add logic to ensure user has no outstanding books or fines before deleting
+    // For now, we will proceed with deletion.
+
+    await user.deleteOne();
+
+    res.json({ message: 'User removed successfully' });
   } catch (err) {
     console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ message: 'User not found' });
+    }
     res.status(500).send('Server error');
   }
 });
