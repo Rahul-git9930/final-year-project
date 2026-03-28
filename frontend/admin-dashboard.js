@@ -588,7 +588,7 @@ function handleNavigation(page) {
     case 'Payments':
       loadPayments();
       break;
-    case '📱 Generate Barcodes':
+    case 'Generate QR Codes':
       window.location.href = '/barcode-generator.html';
       break;
     case 'Book Requests':
