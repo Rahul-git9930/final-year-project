@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -39,7 +39,7 @@
       margin-bottom: 10px;
     }
     .button:hover {
-      background: #0056b3;
+      background: #333;
     }
     .success { color: #28a745; font-weight: bold; }
     .error { color: #dc3545; font-weight: bold; }
@@ -73,7 +73,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>ðŸ“š Wishlist Debugging Tool</h1>
+    <h1>📚 Wishlist Debugging Tool</h1>
     
     <div class="section">
       <h2>Step 1: Check Current Session</h2>
@@ -128,15 +128,15 @@
       userId = localStorage.getItem('userId');
       
       if (token) {
-        log(`âœ… Token found: ${token.substring(0, 20)}...`, 'success');
+        log(`✅ Token found: ${token.substring(0, 20)}...`, 'success');
       } else {
-        log('âŒ No token found in localStorage', 'error');
+        log('❌ No token found in localStorage', 'error');
       }
       
       if (userId) {
-        log(`âœ… User ID: ${userId}`, 'success');
+        log(`✅ User ID: ${userId}`, 'success');
       } else {
-        log('âŒ No User ID found', 'error');
+        log('❌ No User ID found', 'error');
       }
     }
 
@@ -151,7 +151,7 @@
 
     async function testGetBooks() {
       const logDiv = document.getElementById('wishlistLog');
-      logDiv.innerHTML = '<p>ðŸ”„ Loading books...</p>';
+      logDiv.innerHTML = '<p>🔄 Loading books...</p>';
       
       try {
         const response = await fetch('/api/books', {
@@ -163,7 +163,7 @@
         }
         
         const books = await response.json();
-        logDiv.innerHTML += `<p class="success">âœ… Found ${books.length} books</p>`;
+        logDiv.innerHTML += `<p class="success">✅ Found ${books.length} books</p>`;
         
         if (books.length > 0) {
           bookId = books[0]._id;
@@ -178,13 +178,13 @@
           logDiv.innerHTML += '</table>';
         }
       } catch (error) {
-        logDiv.innerHTML += `<p class="error">âŒ Error: ${error.message}</p>`;
+        logDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
       }
     }
 
     async function testGetWishlist() {
       const logDiv = document.getElementById('wishlistLog');
-      logDiv.innerHTML = '<p>ðŸ”„ Loading wishlist...</p>';
+      logDiv.innerHTML = '<p>🔄 Loading wishlist...</p>';
       
       try {
         const response = await fetch('/api/wishlist', {
@@ -196,7 +196,7 @@
         }
         
         const wishlist = await response.json();
-        logDiv.innerHTML += `<p class="success">âœ… Wishlist has ${wishlist.length} items</p>`;
+        logDiv.innerHTML += `<p class="success">✅ Wishlist has ${wishlist.length} items</p>`;
         
         if (wishlist.length > 0) {
           wishlistIds = wishlist.map(w => w.book._id);
@@ -210,7 +210,7 @@
           logDiv.innerHTML += '<p>Your wishlist is empty</p>';
         }
       } catch (error) {
-        logDiv.innerHTML += `<p class="error">âŒ Error: ${error.message}</p>`;
+        logDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
       }
     }
 
@@ -218,11 +218,11 @@
       const logDiv = document.getElementById('wishlistLog');
       
       if (!bookId) {
-        logDiv.innerHTML = '<p class="error">âŒ Please load books first</p>';
+        logDiv.innerHTML = '<p class="error">❌ Please load books first</p>';
         return;
       }
       
-      logDiv.innerHTML = '<p>ðŸ”„ Adding to wishlist...</p>';
+      logDiv.innerHTML = '<p>🔄 Adding to wishlist...</p>';
       
       try {
         const response = await fetch('/api/wishlist', {
@@ -237,13 +237,13 @@
         const data = await response.json();
         
         if (response.ok) {
-          logDiv.innerHTML += `<p class="success">âœ… Added to wishlist</p>`;
+          logDiv.innerHTML += `<p class="success">✅ Added to wishlist</p>`;
           logDiv.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
         } else {
-          logDiv.innerHTML += `<p class="error">âŒ Failed: ${data.message}</p>`;
+          logDiv.innerHTML += `<p class="error">❌ Failed: ${data.message}</p>`;
         }
       } catch (error) {
-        logDiv.innerHTML += `<p class="error">âŒ Error: ${error.message}</p>`;
+        logDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
       }
     }
 
@@ -251,12 +251,12 @@
       const logDiv = document.getElementById('wishlistLog');
       
       if (wishlistIds.length === 0) {
-        logDiv.innerHTML = '<p class="error">âŒ No items in wishlist to remove</p>';
+        logDiv.innerHTML = '<p class="error">❌ No items in wishlist to remove</p>';
         return;
       }
       
       const bookToRemove = wishlistIds[0];
-      logDiv.innerHTML = `<p>ðŸ”„ Removing ${bookToRemove}...</p>`;
+      logDiv.innerHTML = `<p>🔄 Removing ${bookToRemove}...</p>`;
       
       try {
         const response = await fetch(`/api/wishlist/${bookToRemove}`, {
@@ -267,13 +267,13 @@
         const data = await response.json();
         
         if (response.ok) {
-          logDiv.innerHTML += `<p class="success">âœ… Removed from wishlist</p>`;
+          logDiv.innerHTML += `<p class="success">✅ Removed from wishlist</p>`;
           logDiv.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
         } else {
-          logDiv.innerHTML += `<p class="error">âŒ Failed: ${data.message}</p>`;
+          logDiv.innerHTML += `<p class="error">❌ Failed: ${data.message}</p>`;
         }
       } catch (error) {
-        logDiv.innerHTML += `<p class="error">âŒ Error: ${error.message}</p>`;
+        logDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
       }
     }
 
@@ -284,10 +284,10 @@
       // Check if functions exist
       logDiv.innerHTML += '<h3>Function Availability:</h3>';
       
-      logDiv.innerHTML += `<p>${typeof loadWishlist === 'function' ? '<span class="success">âœ…</span>' : '<span class="error">âŒ</span>'} loadWishlist</p>`;
-      logDiv.innerHTML += `<p>${typeof addToWishlist === 'function' ? '<span class="success">âœ…</span>' : '<span class="error">âŒ</span>'} addToWishlist</p>`;
-      logDiv.innerHTML += `<p>${typeof removeFromWishlist === 'function' ? '<span class="success">âœ…</span>' : '<span class="error">âŒ</span>'} removeFromWishlist</p>`;
-      logDiv.innerHTML += `<p>${typeof handleStudentNavigation === 'function' ? '<span class="success">âœ…</span>' : '<span class="error">âŒ</span>'} handleStudentNavigation</p>`;
+      logDiv.innerHTML += `<p>${typeof loadWishlist === 'function' ? '<span class="success">✅</span>' : '<span class="error">❌</span>'} loadWishlist</p>`;
+      logDiv.innerHTML += `<p>${typeof addToWishlist === 'function' ? '<span class="success">✅</span>' : '<span class="error">❌</span>'} addToWishlist</p>`;
+      logDiv.innerHTML += `<p>${typeof removeFromWishlist === 'function' ? '<span class="success">✅</span>' : '<span class="error">❌</span>'} removeFromWishlist</p>`;
+      logDiv.innerHTML += `<p>${typeof handleStudentNavigation === 'function' ? '<span class="success">✅</span>' : '<span class="error">❌</span>'} handleStudentNavigation</p>`;
       
       logDiv.innerHTML += '<h3>Testing Functions:</h3>';
       
@@ -295,9 +295,9 @@
         // Test loadWishlist
         logDiv.innerHTML += `<p><strong>Testing loadWishlist():</strong></p>`;
         loadWishlist();
-        logDiv.innerHTML += `<p class="success">âœ… Function called successfully</p>`;
+        logDiv.innerHTML += `<p class="success">✅ Function called successfully</p>`;
       } catch (error) {
-        logDiv.innerHTML += `<p class="error">âŒ Error: ${error.message}</p>`;
+        logDiv.innerHTML += `<p class="error">❌ Error: ${error.message}</p>`;
       }
     }
   </script>

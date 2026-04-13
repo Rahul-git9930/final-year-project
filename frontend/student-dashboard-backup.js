@@ -264,19 +264,19 @@ async function loadBooks() {
     content.innerHTML = `
       <h1>Books Management</h1>
       ${(user.role === 'admin' || user.role === 'librarian') ? `
-        <button onclick="showAddBookForm()" style="margin-bottom: 20px; padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Add New Book</button>
+        Add New Book</button>
       ` : ''}
       
       <div style="margin-bottom: 20px;">
         <input type="text" id="searchBooks" placeholder="Search books by title, author, or ISBN..." style="padding: 10px; width: 300px; border: 1px solid #ddd; border-radius: 5px;">
-        <button onclick="searchBooks()" style="padding: 10px 20px; margin-left: 10px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Search</button>
+        Search</button>
       </div>
 
       <div class="books-list">
         ${books.length > 0 ? `
           <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
             <thead>
-              <tr style="background: #0f5132; color: white;">
+              <tr style="background: black; color: white;">
                 <th style="padding: 15px; text-align: left;">Title</th>
                 <th style="padding: 15px; text-align: left;">Author</th>
                 <th style="padding: 15px; text-align: left;">Category</th>
@@ -299,8 +299,8 @@ async function loadBooks() {
                   </td>
                   ${(user.role === 'admin' || user.role === 'librarian') ? `
                     <td style="padding: 15px; text-align: center;">
-                      <button onclick="editBook('${book._id}')" style="padding: 5px 10px; margin: 0 5px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Edit</button>
-                      ${user.role === 'admin' ? `<button onclick="deleteBook('${book._id}')" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Delete</button>` : ''}
+                      Edit</button>
+                      ${user.role === 'admin' ? `Delete</button>` : ''}
                     </td>
                   ` : ''}
                 </tr>
@@ -337,7 +337,7 @@ async function searchBooks() {
     booksList.innerHTML = books.length > 0 ? `
       <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
         <thead>
-          <tr style="background: #0f5132; color: white;">
+          <tr style="background: black; color: white;">
             <th style="padding: 15px; text-align: left;">Title</th>
             <th style="padding: 15px; text-align: left;">Author</th>
             <th style="padding: 15px; text-align: left;">Category</th>
@@ -360,8 +360,8 @@ async function searchBooks() {
               </td>
               ${(user.role === 'admin' || user.role === 'librarian') ? `
                 <td style="padding: 15px; text-align: center;">
-                  <button onclick="editBook('${book._id}')" style="padding: 5px 10px; margin: 0 5px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Edit</button>
-                  ${user.role === 'admin' ? `<button onclick="deleteBook('${book._id}')" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Delete</button>` : ''}
+                  Edit</button>
+                  ${user.role === 'admin' ? `Delete</button>` : ''}
                 </td>
               ` : ''}
             </tr>
@@ -445,12 +445,12 @@ async function loadUsers() {
     
     content.innerHTML = `
       <h1>Users Management</h1>
-      <button onclick="showAddMemberForm()" style="margin-bottom: 20px; padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Add New Member</button>
+      Add New Member</button>
       <div class="users-list">
         ${users.length > 0 ? `
           <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
             <thead>
-              <tr style="background: #0f5132; color: white;">
+              <tr style="background: black; color: white;">
                 <th style="padding: 15px; text-align: left;">Name</th>
                 <th style="padding: 15px; text-align: left;">Email</th>
                 <th style="padding: 15px; text-align: left;">Role</th>
@@ -473,11 +473,11 @@ async function loadUsers() {
                   </td>
                   <td style="padding: 15px; text-align: center;">
                     ${user.role === 'admin' ? `
-                      <button onclick="toggleUserStatus('${u._id}')" style="padding: 5px 10px; margin: 0 5px; background: #ffc107; color: black; border: none; border-radius: 5px; cursor: pointer;">
+                      
                         ${u.isActive ? 'Deactivate' : 'Activate'}
                       </button>
                     ` : ''}
-                    <button onclick="viewUserDetails('${u._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">View</button>
+                    View</button>
                   </td>
                 </tr>
               `).join('')}
@@ -545,7 +545,7 @@ async function viewUserDetails(userId) {
     const content = document.querySelector('.content');
     content.innerHTML = `
       <h1>User Details</h1>
-      <button onclick="loadUsers()" style="margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">Back to Users</button>
+      Back to Users</button>
       
       <div style="background: white; padding: 30px; border-radius: 12px;">
         <h2>${userDetails.name}</h2>
@@ -577,7 +577,7 @@ async function viewUserDetails(userId) {
                   <td style="padding: 10px;">${new Date(f.createdAt).toLocaleDateString()}</td>
                   <td style="padding: 10px;">${f.isPaid ? 'Paid' : 'Unpaid'}</td>
                   <td style="padding: 10px; text-align: center;">
-                    ${!f.isPaid ? `<button onclick="markFinePaid('${f._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Mark Paid</button>` : ''}
+                    ${!f.isPaid ? `Mark Paid</button>` : ''}
                   </td>
                 </tr>
               `).join('')}
@@ -613,16 +613,16 @@ async function loadTransactions() {
     
     content.innerHTML = `
       <h1>Transactions</h1>
-      <button onclick="showIssueBookForm()" style="margin-bottom: 20px; padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Issue Book</button>
-      <button onclick="loadTransactions()" style="margin-bottom: 20px; padding: 10px 20px; margin-left: 10px; background: #198754; color: white; border: none; border-radius: 8px; cursor: pointer;">All</button>
-      <button onclick="filterTransactions('issued')" style="margin-bottom: 20px; padding: 10px 20px; margin-left: 10px; background: #ffc107; color: black; border: none; border-radius: 8px; cursor: pointer;">Issued</button>
-      <button onclick="filterTransactions('overdue')" style="margin-bottom: 20px; padding: 10px 20px; margin-left: 10px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer;">Overdue</button>
+      Issue Book</button>
+      All</button>
+      Issued</button>
+      Overdue</button>
       
       <div class="transactions-list">
         ${transactions.length > 0 ? `
           <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
             <thead>
-              <tr style="background: #0f5132; color: white;">
+              <tr style="background: black; color: white;">
                 <th style="padding: 15px; text-align: left;">Book</th>
                 <th style="padding: 15px; text-align: left;">User</th>
                 <th style="padding: 15px; text-align: left;">Issue Date</th>
@@ -645,7 +645,7 @@ async function loadTransactions() {
                   </td>
                   <td style="padding: 15px; text-align: center;">
                     ${t.status !== 'returned' ? `
-                      <button onclick="returnBook('${t._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Return</button>
+                      Return</button>
                     ` : 'Completed'}
                   </td>
                 </tr>
@@ -677,7 +677,7 @@ async function filterTransactions(status) {
     transactionsList.innerHTML = transactions.length > 0 ? `
       <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
         <thead>
-          <tr style="background: #0f5132; color: white;">
+          <tr style="background: black; color: white;">
             <th style="padding: 15px; text-align: left;">Book</th>
             <th style="padding: 15px; text-align: left;">User</th>
             <th style="padding: 15px; text-align: left;">Issue Date</th>
@@ -700,7 +700,7 @@ async function filterTransactions(status) {
               </td>
               <td style="padding: 15px; text-align: center;">
                 ${t.status !== 'returned' ? `
-                  <button onclick="returnBook('${t._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Return</button>
+                  Return</button>
                 ` : 'Completed'}
               </td>
             </tr>
@@ -776,15 +776,15 @@ async function loadFines() {
         <div class="card">Total Amount<br><b>$${(stats.totalAmount || 0).toFixed(2)}</b></div>
       </div>
 
-      <button onclick="loadFines()" style="margin-bottom: 20px; padding: 10px 20px; background: #198754; color: white; border: none; border-radius: 8px; cursor: pointer;">All</button>
-      <button onclick="filterFines(false)" style="margin-bottom: 20px; padding: 10px 20px; margin-left: 10px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer;">Unpaid</button>
-      <button onclick="filterFines(true)" style="margin-bottom: 20px; padding: 10px 20px; margin-left: 10px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Paid</button>
+      All</button>
+      Unpaid</button>
+      Paid</button>
       
       <div class="fines-list">
         ${fines.length > 0 ? `
           <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
             <thead>
-              <tr style="background: #0f5132; color: white;">
+              <tr style="background: black; color: white;">
                 <th style="padding: 15px; text-align: left;">User</th>
                 <th style="padding: 15px; text-align: left;">Amount</th>
                 <th style="padding: 15px; text-align: left;">Reason</th>
@@ -807,7 +807,7 @@ async function loadFines() {
                   </td>
                   <td style="padding: 15px; text-align: center;">
                     ${!f.isPaid ? `
-                      <button onclick="markFinePaid('${f._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Mark Paid</button>
+                      Mark Paid</button>
                     ` : 'Completed'}
                   </td>
                 </tr>
@@ -839,7 +839,7 @@ async function filterFines(isPaid) {
     finesList.innerHTML = fines.length > 0 ? `
       <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
         <thead>
-          <tr style="background: #0f5132; color: white;">
+          <tr style="background: black; color: white;">
             <th style="padding: 15px; text-align: left;">User</th>
             <th style="padding: 15px; text-align: left;">Amount</th>
             <th style="padding: 15px; text-align: left;">Reason</th>
@@ -862,7 +862,7 @@ async function filterFines(isPaid) {
               </td>
               <td style="padding: 15px; text-align: center;">
                 ${!f.isPaid ? `
-                  <button onclick="markFinePaid('${f._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Mark Paid</button>
+                  Mark Paid</button>
                 ` : 'Completed'}
               </td>
             </tr>
@@ -907,10 +907,10 @@ function loadReports() {
     <div class="reports-section">
       <h3>Available Reports</h3>
       <ul style="list-style: none; padding: 0;">
-        <li style="margin: 10px 0;"><button onclick="generateIssuedBooksReport()" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; width: 250px;">📚 Issued Books Report</button></li>
-        <li style="margin: 10px 0;"><button onclick="generateOverdueBooksReport()" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; width: 250px;">⚠️ Overdue Books Report</button></li>
-        <li style="margin: 10px 0;"><button onclick="generateFineCollectionReport()" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; width: 250px;">💰 Fine Collection Report</button></li>
-        <li style="margin: 10px 0;"><button onclick="generateMemberActivityReport()" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; width: 250px;">👥 Member Activity Report</button></li>
+        <li style="margin: 10px 0;">📚 Issued Books Report</button></li>
+        <li style="margin: 10px 0;">⚠️ Overdue Books Report</button></li>
+        <li style="margin: 10px 0;">💰 Fine Collection Report</button></li>
+        <li style="margin: 10px 0;">👥 Member Activity Report</button></li>
       </ul>
     </div>
     <div id="reportContent" style="margin-top: 30px;"></div>
@@ -1171,7 +1171,7 @@ function loadSettings() {
           Max Books Per Member:
           <input type="number" value="3" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;">
         </label>
-        <button type="button" onclick="alert('Settings saved!')" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px;">Save Settings</button>
+        Save Settings</button>
       </form>
     </div>
   `;
@@ -1217,8 +1217,8 @@ function showAddBookForm(book = null) {
         Description:
         <textarea name="description" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; min-height: 100px;">${isEdit ? (book.description || '') : ''}</textarea>
       </label>
-      <button type="submit" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px;">${isEdit ? 'Update' : 'Add'} Book</button>
-      <button type="button" onclick="loadBooks()" style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; margin-left: 10px;">Cancel</button>
+      ${isEdit ? 'Update' : 'Add'} Book</button>
+      Cancel</button>
     </form>
   `;
 
@@ -1291,8 +1291,8 @@ function showAddMemberForm() {
         Phone:
         <input type="tel" name="phone" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;">
       </label>
-      <button type="submit" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px;">Add Member</button>
-      <button type="button" onclick="loadUsers()" style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; margin-left: 10px;">Cancel</button>
+      Add Member</button>
+      Cancel</button>
     </form>
   `;
 
@@ -1367,8 +1367,8 @@ async function showIssueBookForm() {
         Due Date:
         <input type="date" name="dueDate" value="${dueDateString}" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;">
       </label>
-      <button type="submit" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px;">Issue Book</button>
-      <button type="button" onclick="loadTransactions()" style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; margin-left: 10px;">Cancel</button>
+      Issue Book</button>
+      Cancel</button>
     </form>
   `;
 
@@ -1450,7 +1450,7 @@ async function loadStudentDashboard() {
         </div>
         <div style="text-align: right;">
           <div style="text-align: right;">
-            <button onclick="handleStudentNavigation('Notifications')" style="padding: 10px 15px; background: none; border: none; font-size: 24px; cursor: pointer; position: relative;">
+            
               🔔 
               ${unreadNotifications > 0 ? `<span style="position: absolute; top: 0; right: 0; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">${unreadNotifications}</span>` : ''}
             </button>
@@ -1513,8 +1513,8 @@ async function loadStudentDashboard() {
                       </span>
                     </td>
                     <td style="padding: 12px; text-align: center;">
-                      <button onclick="renewBook('${t._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Renew</button>
-                      <button onclick="requestReturn('${t._id}')" style="padding: 5px 10px; background: #ffc107; color: black; border: none; border-radius: 5px; cursor: pointer;">Return</button>
+                      Renew</button>
+                      Return</button>
                     </td>
                   </tr>
                 `;
@@ -1591,7 +1591,7 @@ async function loadSearchBooks() {
             ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
           </select>
         </div>
-        <button onclick="performSearch()" style="width: 100%; padding: 12px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Search</button>
+        Search</button>
       </div>
 
       <div id="booksGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
@@ -1605,10 +1605,10 @@ async function loadSearchBooks() {
             </p>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
               ${book.available > 0 ? 
-                `<button onclick="requestBook('${book._id}')" style="padding: 8px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Issue</button>` :
-                `<button onclick="addToWishlist('${book._id}')" style="padding: 8px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">+ Wishlist</button>`
+                `Issue</button>` :
+                `+ Wishlist</button>`
               }
-              <button onclick="viewBookDetails('${book._id}')" style="padding: 8px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer;">Details</button>
+              Details</button>
             </div>
           </div>
         `).join('')}
@@ -1656,10 +1656,10 @@ async function performSearch() {
           </p>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
             ${book.available > 0 ? 
-              `<button onclick="requestBook('${book._id}')" style="padding: 8px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Issue</button>` :
-              `<button onclick="addToWishlist('${book._id}')" style="padding: 8px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">+ Wishlist</button>`
+              `Issue</button>` :
+              `+ Wishlist</button>`
             }
-            <button onclick="viewBookDetails('${book._id}')" style="padding: 8px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer;">Details</button>
+            Details</button>
           </div>
         </div>
       `).join('')
@@ -1713,8 +1713,8 @@ async function loadMyBooks() {
                       ${isOverdue ? `${Math.abs(daysLeft)} days overdue` : `${daysLeft} days`}
                     </td>
                     <td style="padding: 12px; text-align: center;">
-                      <button onclick="renewBook('${t._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Renew</button>
-                      <button onclick="requestReturn('${t._id}')" style="padding: 6px 12px; background: #ffc107; color: black; border: none; border-radius: 5px; cursor: pointer;">Return</button>
+                      Renew</button>
+                      Return</button>
                     </td>
                   </tr>
                 `;
@@ -1776,15 +1776,15 @@ async function loadWishlist() {
               ${item.book.available > 0 ? `Available Now! (${item.book.available})` : 'Not Available'}
             </p>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-              ${item.book.available > 0 ? `<button onclick="requestBook('${item.book._id}')" style="padding: 8px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Request</button>` : ''}
-              <button onclick="removeFromWishlist('${item.book._id}')" style="padding: 8px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Remove</button>
+              ${item.book.available > 0 ? `Request</button>` : ''}
+              Remove</button>
             </div>
             <p style="font-size: 12px; color: #999; margin-top: 10px;">Added: ${new Date(item.addedAt).toLocaleDateString()}</p>
           </div>
         `).join('') : `
           <div style="grid-column: 1/-1; text-align: center;">
             <p style="font-size: 16px; color: #666;">Your wishlist is empty</p>
-            <button onclick="handleStudentNavigation('Search Books')" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px;">Explore Books</button>
+            Explore Books</button>
           </div>
         `}
       </div>
@@ -1843,7 +1843,7 @@ async function loadStudentFines() {
                   <td style="padding: 12px; color: #dc3545; font-weight: bold;">₹${f.amount.toFixed(2)}</td>
                   <td style="padding: 12px;">${new Date(f.createdAt).toLocaleDateString()}</td>
                   <td style="padding: 12px; text-align: center;">
-                    <button onclick="payFine('${f._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Pay Now</button>
+                    Pay Now</button>
                   </td>
                 </tr>
               `).join('')}
@@ -1981,8 +1981,8 @@ async function loadStudentProfile() {
             <input type="text" value="${userDetails.isActive ? 'Active ✓' : 'Inactive'}" disabled style="width: 100%; padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 5px; color: ${userDetails.isActive ? '#198754' : '#dc3545'}; font-weight: bold;">
           </div>
 
-          <button type="submit" style="width: 100%; padding: 12px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 10px;">Update Profile</button>
-          <button type="button" onclick="changePassword()" style="width: 100%; padding: 12px; background: #198754; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Change Password</button>
+          Update Profile</button>
+          Change Password</button>
         </form>
       </div>
     `;
@@ -2030,14 +2030,14 @@ async function loadNotifications() {
       <h1>Notifications 🔔</h1>
       
       ${notifications.length > 0 ? `
-        <button onclick="markAllRead()" style="margin-bottom: 20px; padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Mark All as Read</button>
+        Mark All as Read</button>
         <div style="display: flex; flex-direction: column; gap: 15px;">
           ${notifications.map(n => `
             <div style="background: ${n.isRead ? '#f8f9fa' : '#e7f3ff'}; padding: 20px; border-radius: 12px; border-left: 4px solid ${n.isRead ? '#ddd' : '#0f5132'};">
               <h3 style="margin: 0 0 10px 0; color: #0f5132;">${n.title}</h3>
               <p style="margin: 0 0 10px 0; color: #666;">${n.message}</p>
               <small style="color: #999;">${new Date(n.createdAt).toLocaleDateString()} ${new Date(n.createdAt).toLocaleTimeString()}</small>
-              ${!n.isRead ? `<button onclick="markNotificationRead('${n._id}')" style="margin-top: 10px; padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Mark as Read</button>` : ''}
+              ${!n.isRead ? `Mark as Read</button>` : ''}
             </div>
           `).join('')}
         </div>
@@ -2155,7 +2155,7 @@ async function viewBookDetails(bookId) {
       : 'No ratings yet';
 
     content.innerHTML = `
-      <button onclick="handleStudentNavigation('Search Books')" style="margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">← Back</button>
+      ← Back</button>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; background: white; padding: 30px; border-radius: 12px;">
         <div>
@@ -2182,7 +2182,7 @@ async function viewBookDetails(bookId) {
             <p>${book.description}</p>
           ` : ''}
 
-          <button onclick="requestBook('${book._id}')" style="margin-top: 20px; padding: 12px 30px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%;">
+          
             ${book.available > 0 ? 'Request This Book' : 'Add to Wishlist'}
           </button>
         </div>
@@ -2374,8 +2374,8 @@ async function loadRequests() {
                   </td>
                   <td style="padding: 12px;">${new Date(r.requestDate).toLocaleString()}</td>
                   <td style="padding: 12px; text-align: center;">
-                    <button onclick="approveRequest('${r._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Approve</button>
-                    <button onclick="rejectRequest('${r._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Reject</button>
+                    Approve</button>
+                    Reject</button>
                   </td>
                 </tr>
               `).join('')}
@@ -2560,7 +2560,7 @@ async function loadMyRequests() {
         ` : `
           <div style="text-align: center; padding: 40px;">
             <p style="font-size: 16px; color: #666;">You haven't made any requests yet</p>
-            <button onclick="handleStudentNavigation('Search Books')" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px;">Browse Books</button>
+            Browse Books</button>
           </div>
         `}
       </div>

@@ -143,10 +143,10 @@ async function loadDashboard() {
 
       <h2>Quick Actions</h2>
       <div class="actions" style="display: flex; gap: 10px; margin: 20px 0;">
-        <button onclick="handleAction('Add Book')" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Add Book</button>
-        <button onclick="handleAction('Issue Book')" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Issue Book</button>
-        <button onclick="handleAction('Add Member')" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Add Member</button>
-        <button onclick="handleAction('View Reports')" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">View Reports</button>
+        Add Book</button>
+        Issue Book</button>
+        Add Member</button>
+        View Reports</button>
       </div>
 
       <h2 style="margin-top: 30px;">📋 Recent Transactions</h2>
@@ -183,7 +183,7 @@ async function loadDashboard() {
       <h1>📊 Dashboard</h1>
       <p>❌ Error loading dashboard</p>
       <p>${error.message}</p>
-      <button onclick="loadDashboard()" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Retry</button>
+      Retry</button>
     `;
   }
 }
@@ -210,19 +210,19 @@ async function loadBooks() {
     content.innerHTML = `
       <h1>📚 Books Management</h1>
       ${(user.role === 'admin' || user.role === 'librarian') ? `
-        <button onclick="showAddBookForm()" style="margin-bottom: 20px; padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">+ Add New Book</button>
+        + Add New Book</button>
       ` : ''}
       
       <div style="margin-bottom: 20px;">
         <input type="text" id="searchBooks" placeholder="Search books..." style="padding: 10px; width: 300px; border: 1px solid #ddd; border-radius: 5px;">
-        <button onclick="searchBooks()" style="padding: 10px 20px; margin-left: 10px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">🔍 Search</button>
+        🔍 Search</button>
       </div>
 
       <div class="books-list">
         ${books.length > 0 ? `
           <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
             <thead>
-              <tr style="background: #0f5132; color: white;">
+              <tr style="background: black; color: white;">
                 <th style="padding: 15px; text-align: left;">Title</th>
                 <th style="padding: 15px; text-align: left;">Author</th>
                 <th style="padding: 15px; text-align: left;">Category</th>
@@ -243,8 +243,8 @@ async function loadBooks() {
                   </td>
                   ${(user.role === 'admin' || user.role === 'librarian') ? `
                     <td style="padding: 15px; text-align: center;">
-                      <button onclick="editBook('${book._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Edit</button>
-                      ${user.role === 'admin' ? `<button onclick="deleteBook('${book._id}')" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 5px;">Delete</button>` : ''}
+                      Edit</button>
+                      ${user.role === 'admin' ? `Delete</button>` : ''}
                     </td>
                   ` : ''}
                 </tr>
@@ -285,7 +285,7 @@ async function loadUsers() {
         ${users.length > 0 ? `
           <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
             <thead>
-              <tr style="background: #0f5132; color: white;">
+              <tr style="background: black; color: white;">
                 <th style="padding: 15px; text-align: left;">Name</th>
                 <th style="padding: 15px; text-align: left;">Email</th>
                 <th style="padding: 15px; text-align: left;">Role</th>
@@ -301,8 +301,8 @@ async function loadUsers() {
                   <td style="padding: 15px;">${u.role}</td>
                   <td style="padding: 15px;"><span style="color: ${u.isActive ? 'green' : 'red'};">${u.isActive ? '✅ Active' : '❌ Inactive'}</span></td>
                   <td style="padding: 15px; text-align: center;">
-                    <button onclick="viewUserDetails('${u._id}')" style="padding: 5px 10px; background: #0d6efd; color: white; border: none; border-radius: 5px; cursor: pointer;">View</button>
-                    <button data-user-id="${u._id}" class="remove-user-btn" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 5px;">Remove</button>
+                    View</button>
+                    Remove</button>
                   </td>
                 </tr>
               `).join('')}
@@ -350,7 +350,7 @@ async function loadTransactions() {
         ${transactions.length > 0 ? `
           <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
             <thead>
-              <tr style="background: #0f5132; color: white;">
+              <tr style="background: black; color: white;">
                 <th style="padding: 15px; text-align: left;">Book</th>
                 <th style="padding: 15px; text-align: left;">User</th>
                 <th style="padding: 15px; text-align: left;">Issue Date</th>
@@ -367,7 +367,7 @@ async function loadTransactions() {
                   <td style="padding: 15px;">${t.status}</td>
                   <td style="padding: 15px; text-align: center;">
                     ${t.status === 'issued' || t.status === 'overdue' ? `
-                      <button onclick="returnBook('${t._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Return</button>
+                      Return</button>
                     ` : '-'}
                   </td>
                 </tr>
@@ -408,7 +408,7 @@ async function loadFines() {
         ${fines.length > 0 ? `
           <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
             <thead>
-              <tr style="background: #0f5132; color: white;">
+              <tr style="background: black; color: white;">
                 <th style="padding: 15px; text-align: left;">User</th>
                 <th style="padding: 15px; text-align: left;">Amount</th>
                 <th style="padding: 15px; text-align: left;">Reason</th>
@@ -425,7 +425,7 @@ async function loadFines() {
                   <td style="padding: 15px;"><span style="color: ${f.isPaid ? 'green' : 'red'};">${f.isPaid ? '✅ Paid' : '❌ Pending'}</span></td>
                   <td style="padding: 15px; text-align: center;">
                     ${!f.isPaid ? `
-                      <button onclick="markFinePaid('${f._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Mark Paid</button>
+                      Mark Paid</button>
                     ` : '-'}
                   </td>
                 </tr>
@@ -463,17 +463,17 @@ async function loadRequests() {
       <h1>📬 Book Requests</h1>
       
       <div style="margin-bottom: 20px;">
-        <button onclick="loadRequests()" style="padding: 8px 15px; background: #0d6efd; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">🔄 Refresh</button>
-        <button onclick="filterRequests('pending')" style="padding: 8px 15px; background: #ffc107; color: black; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">⏳ Pending</button>
-        <button onclick="filterRequests('issued')" style="padding: 8px 15px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">✅ Approved</button>
-        <button onclick="filterRequests('rejected')" style="padding: 8px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">❌ Rejected</button>
+        🔄 Refresh</button>
+        ⏳ Pending</button>
+        ✅ Approved</button>
+        ❌ Rejected</button>
       </div>
       
       <div class="requests-list">
         ${requests.length > 0 ? `
           <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
             <thead>
-              <tr style="background: #0f5132; color: white;">
+              <tr style="background: black; color: white;">
                 <th style="padding: 15px; text-align: left;">Book</th>
                 <th style="padding: 15px; text-align: left;">User</th>
                 <th style="padding: 15px; text-align: left;">Type</th>
@@ -496,8 +496,8 @@ async function loadRequests() {
                   </td>
                   <td style="padding: 15px; text-align: center;">
                     ${r.status === 'pending' ? `
-                      <button onclick="approveRequest('${r._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">✅ Allow</button>
-                      <button onclick="rejectRequest('${r._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">❌ Reject</button>
+                      ✅ Allow</button>
+                      ❌ Reject</button>
                     ` : `<span style="color: #666;">-</span>`}
                   </td>
                 </tr>
@@ -553,8 +553,8 @@ function loadSettings() {
     
     <div style="background: white; padding: 20px; border-radius: 10px;">
       <h3>🔐 Security</h3>
-      <button onclick="changePassword()" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">Change Password</button>
-      <button onclick="logout()" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; margin-left: 10px;">Logout</button>
+      Change Password</button>
+      Logout</button>
     </div>
   `;
 }
@@ -587,9 +587,6 @@ function handleNavigation(page) {
       break;
     case 'Payments':
       loadPayments();
-      break;
-    case 'Generate QR Codes':
-      window.location.href = '/barcode-generator.html';
       break;
     case 'Book Requests':
       loadRequests();
@@ -665,8 +662,8 @@ function showAddBookForm() {
       </div>
       
       <div style="margin-top: 20px;">
-        <button type="submit" style="padding: 10px 30px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px;">✅ Add Book</button>
-        <button type="button" onclick="loadBooks()" style="padding: 10px 30px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">Cancel</button>
+        ✅ Add Book</button>
+        Cancel</button>
       </div>
     </form>
   `;
@@ -744,8 +741,8 @@ function showAddMemberForm() {
       </div>
       
       <div style="margin-top: 20px;">
-        <button type="submit" style="padding: 10px 30px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px;">✅ Add Member</button>
-        <button type="button" onclick="loadUsers()" style="padding: 10px 30px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">Cancel</button>
+        ✅ Add Member</button>
+        Cancel</button>
       </div>
     </form>
   `;
@@ -824,8 +821,8 @@ async function editBook(bookId) {
         </div>
         
         <div style="margin-top: 20px;">
-          <button type="submit" style="padding: 10px 30px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px;">✅ Save Changes</button>
-          <button type="button" onclick="loadBooks()" style="padding: 10px 30px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">Cancel</button>
+          ✅ Save Changes</button>
+          Cancel</button>
         </div>
       </form>
     `;
@@ -921,7 +918,7 @@ async function searchBooks() {
         <p style="margin-bottom: 15px;">Found ${books.length} result(s)</p>
         <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
           <thead>
-            <tr style="background: #0f5132; color: white;">
+            <tr style="background: black; color: white;">
               <th style="padding: 15px; text-align: left;">Title</th>
               <th style="padding: 15px; text-align: left;">Author</th>
               <th style="padding: 15px; text-align: left;">Category</th>
@@ -942,8 +939,8 @@ async function searchBooks() {
                 </td>
                 ${(user.role === 'admin' || user.role === 'librarian') ? `
                   <td style="padding: 15px; text-align: center;">
-                    <button onclick="editBook('${book._id}')" style="padding: 5px 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Edit</button>
-                    ${user.role === 'admin' ? `<button onclick="deleteBook('${book._id}')" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 5px;">Delete</button>` : ''}
+                    Edit</button>
+                    ${user.role === 'admin' ? `Delete</button>` : ''}
                   </td>
                 ` : ''}
               </tr>
@@ -1054,7 +1051,7 @@ async function generateIssuedBooksReport() {
       
       <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse; margin-top: 20px;">
         <thead>
-          <tr style="background: #0f5132; color: white;">
+          <tr style="background: black; color: white;">
             <th style="padding: 15px; text-align: left;">Book</th>
             <th style="padding: 15px; text-align: left;">User</th>
             <th style="padding: 15px; text-align: left;">Issue Date</th>
@@ -1075,7 +1072,7 @@ async function generateIssuedBooksReport() {
         </tbody>
       </table>
       
-      <button onclick="loadReports()" style="margin-top: 20px; padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">← Back to Reports</button>
+      ← Back to Reports</button>
     `;
   } catch (error) {
     alert('❌ Error: ' + error.message);
@@ -1104,7 +1101,7 @@ async function generateOverdueBooksReport() {
       
       <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse; margin-top: 20px;">
         <thead>
-          <tr style="background: #dc3545; color: white;">
+          <tr style="background: black; color: white;">
             <th style="padding: 15px; text-align: left;">Book</th>
             <th style="padding: 15px; text-align: left;">User</th>
             <th style="padding: 15px; text-align: left;">Issue Date</th>
@@ -1128,7 +1125,7 @@ async function generateOverdueBooksReport() {
         </tbody>
       </table>
       
-      <button onclick="loadReports()" style="margin-top: 20px; padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">← Back to Reports</button>
+      ← Back to Reports</button>
     `;
   } catch (error) {
     alert('❌ Error: ' + error.message);
@@ -1177,7 +1174,7 @@ async function generateFineCollectionReport() {
       <h3>Paid Fines (${paidFines.length})</h3>
       <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse; margin-bottom: 30px;">
         <thead>
-          <tr style="background: #198754; color: white;">
+          <tr style="background: black; color: white;">
             <th style="padding: 15px; text-align: left;">User</th>
             <th style="padding: 15px; text-align: left;">Amount</th>
             <th style="padding: 15px; text-align: left;">Reason</th>
@@ -1196,7 +1193,7 @@ async function generateFineCollectionReport() {
         </tbody>
       </table>
       
-      <button onclick="loadReports()" style="margin-top: 20px; padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer;">← Back to Reports</button>
+      ← Back to Reports</button>
     `;
   } catch (error) {
     alert('❌ Error: ' + error.message);
@@ -1332,7 +1329,7 @@ async function filterRequests(status) {
       listDiv.innerHTML = requests.length > 0 ? `
         <table style="width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse;">
           <thead>
-            <tr style="background: #0f5132; color: white;">
+            <tr style="background: black; color: white;">
               <th style="padding: 15px; text-align: left;">Book</th>
               <th style="padding: 15px; text-align: left;">User</th>
               <th style="padding: 15px; text-align: left;">Type</th>
@@ -1355,8 +1352,8 @@ async function filterRequests(status) {
                 </td>
                 <td style="padding: 15px; text-align: center;">
                   ${r.status === 'pending' ? `
-                    <button onclick="approveRequest('${r._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">✅ Allow</button>
-                    <button onclick="rejectRequest('${r._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">❌ Reject</button>
+                    ✅ Allow</button>
+                    ❌ Reject</button>
                   ` : `<span style="color: #666;">-</span>`}
                 </td>
               </tr>
@@ -1486,8 +1483,8 @@ async function loadPayments() {
           <option value="membership">Membership</option>
           <option value="penalty">Penalty</option>
         </select>
-        <button onclick="filterPayments()" style="padding: 8px 16px; background: #0d6efd; color: white; border: none; border-radius: 6px; cursor: pointer;">Filter</button>
-        <button onclick="showRecordCashPaymentForm()" style="padding: 8px 16px; background: #198754; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: auto;">💰 Record Cash Payment</button>
+        Filter</button>
+        💰 Record Cash Payment</button>
       </div>
       
       <h2 style="margin-top: 30px;">Recent Payments (${payments.length})</h2>
@@ -1605,10 +1602,10 @@ function showRecordCashPaymentForm() {
         </div>
         
         <div style="display: flex; gap: 10px;">
-          <button type="submit" style="flex: 1; padding: 12px; background: #198754; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+          
             ✅ Record Payment
           </button>
-          <button type="button" onclick="loadPayments()" style="flex: 1; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+          
             Cancel
           </button>
         </div>

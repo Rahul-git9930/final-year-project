@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,14 +12,14 @@
     .error { background: #f8d7da; border-left-color: #dc3545; color: #721c24; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-    th { background: #0f5132; color: white; }
+    th { background: black; color: white; }
     .check { font-size: 20px; }
   </style>
   <link rel="stylesheet" href="responsive.css">
 </head>
 <body>
   <div class="container">
-    <h1>âœ… Admin Dashboard - Complete Verification</h1>
+    <h1>✅ Admin Dashboard - Complete Verification</h1>
     
     <div id="results"></div>
   </div>
@@ -90,12 +90,12 @@
     // Display results
     let html = `
       <div class="status ok">
-        <h2>âœ… VERIFICATION RESULTS</h2>
+        <h2>✅ VERIFICATION RESULTS</h2>
         <p><strong>Total Checks:</strong> ${results.total}</p>
         <p><strong>Passed:</strong> <span style="color: #198754; font-weight: bold;">${results.passed}</span></p>
         <p><strong>Failed:</strong> <span style="color: #dc3545; font-weight: bold;">${results.failed}</span></p>
         <p><strong>Status:</strong> <span style="font-weight: bold; font-size: 18px;">
-          ${results.failed === 0 ? 'âœ… ALL CHECKS PASSED' : 'âš ï¸ SOME CHECKS FAILED'}
+          ${results.failed === 0 ? '✅ ALL CHECKS PASSED' : '⚠️ SOME CHECKS FAILED'}
         </span></p>
       </div>
     `;
@@ -104,7 +104,7 @@
     html += '<table><tr><th>Check</th><th>Status</th><th>Details</th></tr>';
 
     results.checks.forEach(check => {
-      const statusClass = check.status === 'PASS' ? 'âœ…' : 'âŒ';
+      const statusClass = check.status === 'PASS' ? '✅' : '❌';
       html += `<tr>
         <td><strong>${check.name}</strong></td>
         <td>${statusClass} ${check.status}</td>
@@ -117,27 +117,27 @@
     html += '<h2>Navigation Routes</h2>';
     html += `<table>
       <tr><th>Menu Item</th><th>Function</th><th>Status</th></tr>
-      <tr><td>Dashboard</td><td>loadDashboard()</td><td>${typeof loadDashboard === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Books</td><td>loadBooks()</td><td>${typeof loadBooks === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Users</td><td>loadUsers()</td><td>${typeof loadUsers === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Transactions</td><td>loadTransactions()</td><td>${typeof loadTransactions === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Fines</td><td>loadFines()</td><td>${typeof loadFines === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Book Requests</td><td>loadRequests()</td><td>${typeof loadRequests === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Reports</td><td>loadReports()</td><td>${typeof loadReports === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Settings</td><td>loadSettings()</td><td>${typeof loadSettings === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
+      <tr><td>Dashboard</td><td>loadDashboard()</td><td>${typeof loadDashboard === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Books</td><td>loadBooks()</td><td>${typeof loadBooks === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Users</td><td>loadUsers()</td><td>${typeof loadUsers === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Transactions</td><td>loadTransactions()</td><td>${typeof loadTransactions === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Fines</td><td>loadFines()</td><td>${typeof loadFines === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Book Requests</td><td>loadRequests()</td><td>${typeof loadRequests === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Reports</td><td>loadReports()</td><td>${typeof loadReports === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Settings</td><td>loadSettings()</td><td>${typeof loadSettings === 'function' ? '✅' : '❌'}</td></tr>
     </table>`;
 
     html += '<h2>Key Operations</h2>';
     html += `<table>
       <tr><th>Operation</th><th>Function</th><th>Status</th></tr>
-      <tr><td>Add Book</td><td>showAddBookForm()</td><td>${typeof showAddBookForm === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Add Member</td><td>showAddMemberForm()</td><td>${typeof showAddMemberForm === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Approve Request</td><td>approveRequest()</td><td>${typeof approveRequest === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Reject Request</td><td>rejectRequest()</td><td>${typeof rejectRequest === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Return Book</td><td>returnBook()</td><td>${typeof returnBook === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Mark Fine Paid</td><td>markFinePaid()</td><td>${typeof markFinePaid === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Generate Reports</td><td>generateIssuedBooksReport()</td><td>${typeof generateIssuedBooksReport === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
-      <tr><td>Change Password</td><td>changePassword()</td><td>${typeof changePassword === 'function' ? 'âœ…' : 'âŒ'}</td></tr>
+      <tr><td>Add Book</td><td>showAddBookForm()</td><td>${typeof showAddBookForm === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Add Member</td><td>showAddMemberForm()</td><td>${typeof showAddMemberForm === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Approve Request</td><td>approveRequest()</td><td>${typeof approveRequest === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Reject Request</td><td>rejectRequest()</td><td>${typeof rejectRequest === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Return Book</td><td>returnBook()</td><td>${typeof returnBook === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Mark Fine Paid</td><td>markFinePaid()</td><td>${typeof markFinePaid === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Generate Reports</td><td>generateIssuedBooksReport()</td><td>${typeof generateIssuedBooksReport === 'function' ? '✅' : '❌'}</td></tr>
+      <tr><td>Change Password</td><td>changePassword()</td><td>${typeof changePassword === 'function' ? '✅' : '❌'}</td></tr>
     </table>`;
 
     document.getElementById('results').innerHTML = html;

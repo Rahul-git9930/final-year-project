@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
     h2 { color: #198754; margin-top: 20px; }
     .test-section { margin: 20px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #0f5132; }
     .button-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
-    .test-btn { padding: 10px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .test-btn { padding: 10px; background: black; color: white; border: none; border-radius: 5px; cursor: pointer; }
     .test-btn:hover { background: #0d3d24; }
     .result { padding: 10px; margin: 10px 0; border-radius: 5px; }
     .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
@@ -28,7 +28,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>ðŸ§ª Admin Dashboard - Comprehensive Test Suite</h1>
+    <h1>🧪 Admin Dashboard - Comprehensive Test Suite</h1>
     
     <div class="test-section">
       <h2>Navigation Test</h2>
@@ -72,12 +72,12 @@
       try {
         if (typeof handleNavigation === 'function') {
           handleNavigation(page);
-          resultDiv.innerHTML = `<div class="result success">âœ… Navigation to '${page}' works</div>`;
+          resultDiv.innerHTML = `<div class="result success">✅ Navigation to '${page}' works</div>`;
         } else {
-          resultDiv.innerHTML = `<div class="result error">âŒ handleNavigation function not found</div>`;
+          resultDiv.innerHTML = `<div class="result error">❌ handleNavigation function not found</div>`;
         }
       } catch (error) {
-        resultDiv.innerHTML = `<div class="result error">âŒ Error: ${error.message}</div>`;
+        resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
       }
     }
 
@@ -101,7 +101,7 @@
         const exists = typeof window[func] === 'function';
         if (exists) foundCount++;
         html += `<li class="${exists ? 'exists' : 'missing'}">
-          ${exists ? 'âœ…' : 'âŒ'} ${func}
+          ${exists ? '✅' : '❌'} ${func}
         </li>`;
       });
 
@@ -113,7 +113,7 @@
     async function testAPIs() {
       const resultDiv = document.getElementById('apiResult');
       if (!token) {
-        resultDiv.innerHTML = `<div class="result error">âŒ No token found - please login first</div>`;
+        resultDiv.innerHTML = `<div class="result error">❌ No token found - please login first</div>`;
         return;
       }
 
@@ -136,12 +136,12 @@
           const response = await fetch(api, {
             headers: { 'Authorization': 'Bearer ' + token }
           });
-          const status = response.ok ? 'âœ…' : 'âš ï¸';
+          const status = response.ok ? '✅' : '⚠️';
           const className = response.ok ? 'success' : 'warning';
           if (response.ok) working++;
           html += `<div class="result ${className}">${status} ${api} (${response.status})</div>`;
         } catch (error) {
-          html += `<div class="result error">âŒ ${api} - ${error.message}</div>`;
+          html += `<div class="result error">❌ ${api} - ${error.message}</div>`;
         }
       }
 
@@ -170,7 +170,7 @@
         html += `<tr>
           <td><strong>${section}</strong></td>
           <td>${btnList.join('<br>')}</td>
-          <td><span style="color: #198754;">âœ… Implemented</span></td>
+          <td><span style="color: #198754;">✅ Implemented</span></td>
         </tr>`;
       }
 

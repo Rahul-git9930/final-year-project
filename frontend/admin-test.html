@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +10,8 @@
     .fail { border-left-color: red; }
     .pending { border-left-color: orange; }
     h1 { color: #333; }
-    button { padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
-    button:hover { background: #084426; }
+    button { padding: 10px 20px; background: black; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+    button:hover { background: #333; }
     .result { padding: 10px; margin-top: 10px; border-radius: 5px; }
     .result.ok { background: #d4edda; color: #155724; }
     .result.error { background: #f8d7da; color: #721c24; }
@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<h1>ðŸ”§ Admin Panel Diagnostic Test</h1>
+<h1>🔧 Admin Panel Diagnostic Test</h1>
 
 <div class="test pending">
   <h3>1. Check Authentication</h3>
@@ -74,22 +74,22 @@ function checkAuth() {
   const user = localStorage.getItem('user');
   
   if (!token) {
-    log('authResult', 'âŒ No token found! User not logged in.', true);
+    log('authResult', '❌ No token found! User not logged in.', true);
     return false;
   }
   
   if (!user) {
-    log('authResult', 'âŒ No user data found!', true);
+    log('authResult', '❌ No user data found!', true);
     return false;
   }
   
   try {
     const userData = JSON.parse(user);
-    log('authResult', `âœ… Token found (${token.substring(0, 20)}...)`);
-    log('authResult', `âœ… User: ${userData.name} (${userData.email})`);
+    log('authResult', `✅ Token found (${token.substring(0, 20)}...)`);
+    log('authResult', `✅ User: ${userData.name} (${userData.email})`);
     return true;
   } catch (e) {
-    log('authResult', `âŒ Invalid user data: ${e.message}`, true);
+    log('authResult', `❌ Invalid user data: ${e.message}`, true);
     return false;
   }
 }
@@ -97,21 +97,21 @@ function checkAuth() {
 function checkRole() {
   const user = localStorage.getItem('user');
   if (!user) {
-    log('roleResult', 'âŒ No user data found', true);
+    log('roleResult', '❌ No user data found', true);
     return false;
   }
   
   try {
     const userData = JSON.parse(user);
     if (userData.role === 'admin' || userData.role === 'librarian') {
-      log('roleResult', `âœ… User role is: ${userData.role}`);
+      log('roleResult', `✅ User role is: ${userData.role}`);
       return true;
     } else {
-      log('roleResult', `âŒ User role is: ${userData.role} (need admin or librarian)`, true);
+      log('roleResult', `❌ User role is: ${userData.role} (need admin or librarian)`, true);
       return false;
     }
   } catch (e) {
-    log('roleResult', `âŒ Error: ${e.message}`, true);
+    log('roleResult', `❌ Error: ${e.message}`, true);
     return false;
   }
 }
@@ -119,12 +119,12 @@ function checkRole() {
 async function testAPI() {
   const token = localStorage.getItem('token');
   if (!token) {
-    log('apiResult', 'âŒ No token available', true);
+    log('apiResult', '❌ No token available', true);
     return;
   }
   
   try {
-    log('apiResult', 'â³ Testing API connection...');
+    log('apiResult', '⏳ Testing API connection...');
     const response = await fetch('/api/dashboard/stats', {
       headers: {
         'Authorization': 'Bearer ' + token
@@ -133,47 +133,47 @@ async function testAPI() {
     
     if (response.ok) {
       const data = await response.json();
-      log('apiResult', `âœ… API connected! Got stats:`, false);
+      log('apiResult', `✅ API connected! Got stats:`, false);
       log('apiResult', `   Total Books: ${data.totalBooks}`);
       log('apiResult', `   Total Members: ${data.totalMembers}`);
     } else {
-      log('apiResult', `âŒ API error: ${response.status} ${response.statusText}`, true);
+      log('apiResult', `❌ API error: ${response.status} ${response.statusText}`, true);
       const text = await response.text();
       log('apiResult', `   Response: ${text.substring(0, 100)}`, true);
     }
   } catch (e) {
-    log('apiResult', `âŒ Error: ${e.message}`, true);
+    log('apiResult', `❌ Error: ${e.message}`, true);
   }
 }
 
 function checkDashboard() {
   if (typeof loadDashboard === 'function') {
-    log('dashResult', 'âœ… admin-dashboard.js is loaded');
-    log('dashResult', 'âœ… loadDashboard function exists');
+    log('dashResult', '✅ admin-dashboard.js is loaded');
+    log('dashResult', '✅ loadDashboard function exists');
   } else {
-    log('dashResult', 'âŒ admin-dashboard.js not loaded or loadDashboard not found', true);
+    log('dashResult', '❌ admin-dashboard.js not loaded or loadDashboard not found', true);
   }
   
   if (typeof fetchWithTimeout === 'function') {
-    log('dashResult', 'âœ… fetchWithTimeout function exists');
+    log('dashResult', '✅ fetchWithTimeout function exists');
   } else {
-    log('dashResult', 'âŒ fetchWithTimeout not found', true);
+    log('dashResult', '❌ fetchWithTimeout not found', true);
   }
 }
 
 async function loadFullDashboard() {
   try {
-    log('fullResult', 'â³ Loading admin dashboard...');
+    log('fullResult', '⏳ Loading admin dashboard...');
     
     if (typeof loadDashboard !== 'function') {
-      log('fullResult', 'âŒ loadDashboard function not available', true);
+      log('fullResult', '❌ loadDashboard function not available', true);
       return;
     }
     
     await loadDashboard();
-    log('fullResult', 'âœ… Dashboard loaded successfully!');
+    log('fullResult', '✅ Dashboard loaded successfully!');
   } catch (e) {
-    log('fullResult', `âŒ Error: ${e.message}`, true);
+    log('fullResult', `❌ Error: ${e.message}`, true);
   }
 }
 
@@ -184,7 +184,7 @@ function goToAdmin() {
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  log('fullResult', 'âœ… Logged out. Redirecting to login...');
+  log('fullResult', '✅ Logged out. Redirecting to login...');
   setTimeout(() => window.location.href = '/', 1000);
 }
 

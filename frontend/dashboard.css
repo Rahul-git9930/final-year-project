@@ -43,14 +43,15 @@ body {
   margin-bottom: 8px;
   border-radius: 8px;
   cursor: pointer;
-  color: #d1d5db;
-  transition: background 0.3s;
+  color: #fff;
+  background: black;
+  transition: background 0.3s, color 0.3s;
 }
 
 .sidebar ul li:hover,
 .sidebar ul li.active {
-  background: #6366f1;
-  color: #fff;
+  background: #fff;
+  color: black;
 }
 
 /* ===== ACCOUNT ===== */
@@ -126,7 +127,7 @@ body {
 
 .actions button {
   padding: 12px 22px;
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  background: black;
   border: none;
   border-radius: 10px;
   color: #fff;
