@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const roleAuth = require('../middleware/roleAuth');
 const Book = require('../models/Book');
+const QRCode = require('qrcode');
 
 // @route   GET /api/books
 // @desc    Get all books
@@ -77,6 +78,15 @@ router.post('/', [auth, roleAuth('admin', 'librarian')], async (req, res) => {
       coverImage,
       addedBy: req.user.id
     });
+
+    // Generate QR Code with book details
+    const qrData = JSON.stringify({
+      bookId: book._id,
+      title: book.title,
+      author: book.author,
+      isbn: book.isbn || 'N/A'
+    });
+    book.qrCode = await QRCode.toDataURL(qrData);
 
     await book.save();
     res.json(book);

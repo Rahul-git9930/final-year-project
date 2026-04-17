@@ -42,6 +42,9 @@ const BookSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
+  qrCode: {
+    type: String
+  },
   createdAt: {
     type: Date,
     default: Date.now

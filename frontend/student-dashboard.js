@@ -1,4 +1,4 @@
-// Student Dashboard functionality
+﻿// Student Dashboard functionality
 document.addEventListener('DOMContentLoaded', function() {
   // Check if user is logged in
   const token = localStorage.getItem('token');
@@ -1545,6 +1545,9 @@ function handleStudentNavigation(page) {
     case 'My Books':
       loadMyBooks();
       break;
+    case 'Scan QR Code':
+      loadQRScanner();
+      break;
     case 'Wishlist':
       loadWishlist();
       break;
@@ -2688,3 +2691,134 @@ async function changePassword() {
     alert('Error changing password. Please try again.');
   }
 }
+
+async function loadQRScanner() {
+  const content = document.querySelector('.content');
+  content.innerHTML = `
+    <h1>📸 Scan Book QR Code</h1>
+    <div style="max-width: 500px; margin: 20px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center;">
+      <div id="reader" style="width: 100%; border: 2px dashed #ddd; border-radius: 8px; min-height: 250px; background: #fafafa; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;"></div>
+      <button id="startScanBtn" style="padding: 10px 20px; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px;">Start Camera</button>
+      <div id="scanResult" style="margin-top: 20px; text-align: left; display: none; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #eef2ff;"></div>
+    </div>
+  `;
+
+  let html5QrcodeScanner = null;
+
+  document.getElementById('startScanBtn').addEventListener('click', () => {
+    const btn = document.getElementById('startScanBtn');
+    if (html5QrcodeScanner) {
+      html5QrcodeScanner.stop().then(() => {
+        html5QrcodeScanner.clear();
+        html5QrcodeScanner = null;
+        btn.textContent = 'Start Camera';
+        btn.style.background = '#4f46e5';
+      }).catch(err => console.error('Failed to stop scanner', err));
+      return;
+    }
+    
+    btn.textContent = 'Stop Camera';
+    btn.style.background = '#dc3545';
+    
+    html5QrcodeScanner = new Html5Qrcode('reader');
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+    
+    html5QrcodeScanner.start({ facingMode: 'environment' }, config, async (decodedText) => {
+      html5QrcodeScanner.stop().then(() => {
+        html5QrcodeScanner.clear();
+        html5QrcodeScanner = null;
+        btn.style.display = 'none';
+      }).catch(err => console.error('Failed to stop on scan', err));
+      
+      try {
+        const qrData = JSON.parse(decodedText);
+        if(qrData && qrData.bookId) {
+           await loadBookFromQR(qrData.bookId, qrData);
+        } else {
+           showScanError('Invalid Library QR Code');
+        }
+      } catch(e) {
+        showScanError('Invalid Library QR Code format.');
+      }
+    }, (error) => {}).catch(err => {
+      showScanError('Failed to access camera: ' + err);
+    });
+  });
+}
+
+function showScanError(msg) {
+  const resultDiv = document.getElementById('scanResult');
+  resultDiv.style.display = 'block';
+  resultDiv.style.background = '#fde8e8';
+  resultDiv.style.border = '1px solid #f8b4b4';
+  resultDiv.innerHTML = `<h3 style="color: #b42318; margin-top: 0;">Error</h3><p>${msg}</p><button onclick="loadQRScanner()" style="margin-top:10px; padding:8px 15px; background: #6b7280; color:white; border:none; border-radius:5px; cursor:pointer;">Try Again</button>`;
+}
+
+async function loadBookFromQR(bookId, fallbackData) {
+  const resultDiv = document.getElementById('scanResult');
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '<p>Fetching book details and requesting issue...</p>';
+  
+  try {
+    const response = await fetch('/api/books/' + bookId, {
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    });
+    
+    if (response.ok) {
+      const book = await response.json();
+      displayQRResult(book);
+      // Automatically request issue upon successful scan
+      window.requestBookIssue(book._id || book.bookId);
+    } else {
+       displayQRResult(Object.assign({}, fallbackData, { fallbackMode: true }));
+       // Attempt to request issue anyway using fallback data
+       window.requestBookIssue(fallbackData.bookId);
+    }
+  } catch(e) {
+    displayQRResult(Object.assign({}, fallbackData, { fallbackMode: true }));
+    window.requestBookIssue(fallbackData.bookId);
+  }
+}
+
+function displayQRResult(book) {
+  const resultDiv = document.getElementById('scanResult');
+  resultDiv.style.display = 'block';
+  resultDiv.style.background = '#eef2ff';
+  
+  const availabilityHTML = book.available > 0 ? `<span style="color: green;">Yes (${book.available})</span>` : `<span style="color: red;">No</span>`;
+
+  resultDiv.innerHTML = `
+    <h3 style="margin-top: 0; color: #4f46e5; border-bottom: 2px solid #ddd; padding-bottom: 8px;">Book Details</h3>
+    <p><strong>Title:</strong> ${book.title}</p>
+    <p><strong>Author:</strong> ${book.author}</p>
+    <p><strong>ISBN:</strong> ${book.isbn || 'N/A'}</p>
+    <p><strong>Available:</strong> ${!book.fallbackMode ? availabilityHTML : '<i>Live availability unknown</i>'}</p>
+    <div style="margin-top: 20px; display: flex; gap: 10px;">
+      <button onclick="requestBookIssue('${book._id || book.bookId}')" style="padding: 10px 20px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer; flex: 1;" ${book.available < 1 && !book.fallbackMode ? 'disabled' : ''}>Request Issue</button>
+      <button onclick="loadQRScanner()" style="padding: 10px 20px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer; flex: 1;">Scan Another</button>
+    </div>
+  `;
+}
+
+window.requestBookIssue = async function(bookId) {
+  const token = localStorage.getItem('token');
+  try {
+    const response = await fetch('/api/requests/issue', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ bookId: bookId })
+    });
+    if(response.ok) {
+      alert('✅ Issue request submitted successfully!');
+      handleStudentNavigation('Issue');
+    } else {
+      const err = await response.json();
+      alert('❌ ' + (err.message || 'Error making request'));
+    }
+  } catch(e) {
+    alert('❌ Error making request');
+  }
+};

@@ -1,4 +1,4 @@
-// ============================================
+﻿// ============================================
 // ADMIN DASHBOARD - LIBRARY MANAGEMENT SYSTEM
 // ============================================
 
@@ -593,6 +593,9 @@ function handleNavigation(page) {
       break;
     case 'Reports':
       loadReports();
+      break;
+    case 'Generate QR Codes':
+      loadQRCodes();
       break;
     case 'Settings':
       loadSettings();
@@ -1635,3 +1638,88 @@ function showRecordCashPaymentForm() {
 
 
 console.log('✅ admin-dashboard.js fully loaded');
+
+
+// --- Added for Generating QR Codes View ---
+async function loadQRCodes() {
+  const content = document.querySelector('.content');
+  content.innerHTML = '<h1>🔲 Book QR Codes</h1><p>Loading books and QR codes...</p>';
+
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch('/api/books', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+
+    if (response.ok) {
+      const books = await response.json();
+      
+      let html = `
+        <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'>
+          <h1>🔲 Book QR Codes Gallery</h1>
+          <button onclick='loadQRCodes()' style='padding: 8px 16px; background: #6c6ceb; color: white; border: none; border-radius: 5px; cursor: pointer;'>Refresh</button>
+        </div>
+        
+        <div style='margin-bottom: 20px;'>
+          <input type='text' id='qrSearchInput' placeholder='Search books by title or ISBN...' style='width: 100%; max-width: 400px; padding: 10px; border-radius: 5px; border: 1px solid #ddd;' onkeyup='filterQRCodes()'>
+        </div>
+
+        <div id='qrGrid' style='display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;'>
+      `;
+
+      if (books.length === 0) {
+        html += '<p>No books found in the library.</p>';
+      } else {
+        books.forEach(book => {
+          const titleSafe = book.title ? book.title.replace(/[^a-zA-Z0-9]/g, '_') : 'Book';
+          const titleLower = book.title ? book.title.toLowerCase() : '';
+          const isbnLower = book.isbn ? book.isbn.toLowerCase() : '';
+          
+          html += `
+            <div class='qr-card' data-title='${titleLower}' data-isbn='${isbnLower}' style='background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; display: flex; flex-direction: column; justify-content: space-between;'>
+              <div style='margin-bottom: 15px;'>
+                <h3 style='font-size: 16px; margin-bottom: 5px; color: #333;'>${book.title}</h3>
+                <p style='font-size: 12px; color: #666;'>ISBN: ${book.isbn || 'N/A'}</p>
+              </div>
+              
+              ${book.qrCode ? 
+                `<div style='display: flex; flex-direction: column; align-items: center;'>
+                  <img src='${book.qrCode}' alt='QR for ${book.title}' style='width: 150px; height: 150px; margin: 0 auto; display: block; border: 1px solid #eee; border-radius: 8px; padding: 5px;' />
+                  <a href='${book.qrCode}' download='QR_${titleSafe}.png' style='display: inline-block; margin-top: 15px; padding: 8px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; font-size: 13px; cursor: pointer;'>Download QR</a>
+                </div>` : 
+                `<div style='padding: 20px 0; color: #999; font-style: italic; border: 1px dashed #ddd; border-radius: 8px;'>
+                  No QR generated
+                </div>`
+              }
+            </div>
+          `;
+        });
+      }
+
+      html += '</div>';
+      content.innerHTML = html;
+    } else {
+      content.innerHTML = '<h1>🔲 Book QR Codes</h1><p style="color: red;">Failed to load books.</p>';
+    }
+  } catch (error) {
+    console.error('Error fetching QR codes:', error);
+    const content = document.querySelector('.content');
+    content.innerHTML = '<h1>🔲 Book QR Codes</h1><p style="color: red;">Error connecting to server.</p>';
+  }
+}
+
+window.filterQRCodes = function() {
+  const input = document.getElementById('qrSearchInput').value.toLowerCase();
+  const cards = document.querySelectorAll('.qr-card');
+  
+  cards.forEach(card => {
+    const title = card.getAttribute('data-title');
+    const isbn = card.getAttribute('data-isbn');
+    
+    if (title.includes(input) || isbn.includes(input)) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+};
