@@ -264,12 +264,12 @@ async function loadBooks() {
     content.innerHTML = `
       <h1>Books Management</h1>
       ${(user.role === 'admin' || user.role === 'librarian') ? `
-        Add New Book</button>
+        <button onclick="showAddBookForm()" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px;">+ Add New Book</button>
       ` : ''}
       
       <div style="margin-bottom: 20px;">
         <input type="text" id="searchBooks" placeholder="Search books by title, author, or ISBN..." style="padding: 10px; width: 300px; border: 1px solid #ddd; border-radius: 5px;">
-        Search</button>
+        <button onclick="searchBooks()" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
       </div>
 
       <div class="books-list">
@@ -299,8 +299,8 @@ async function loadBooks() {
                   </td>
                   ${(user.role === 'admin' || user.role === 'librarian') ? `
                     <td style="padding: 15px; text-align: center;">
-                      Edit</button>
-                      ${user.role === 'admin' ? `Delete</button>` : ''}
+                      <button onclick="editBook('${book._id}')" style="padding: 8px 15px; background: #ffc107; color: black; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Edit</button>
+                      ${user.role === 'admin' ? `<button onclick="deleteBook('${book._id}')" style="padding: 8px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Delete</button>` : ''}
                     </td>
                   ` : ''}
                 </tr>
@@ -360,8 +360,8 @@ async function searchBooks() {
               </td>
               ${(user.role === 'admin' || user.role === 'librarian') ? `
                 <td style="padding: 15px; text-align: center;">
-                  Edit</button>
-                  ${user.role === 'admin' ? `Delete</button>` : ''}
+                  <button onclick="editBook('${book._id}')" style="padding: 8px 15px; background: #ffc107; color: black; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Edit</button>
+                  ${user.role === 'admin' ? `<button onclick="deleteBook('${book._id}')" style="padding: 8px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Delete</button>` : ''}
                 </td>
               ` : ''}
             </tr>
@@ -1513,8 +1513,8 @@ async function loadStudentDashboard() {
                       </span>
                     </td>
                     <td style="padding: 12px; text-align: center;">
-                      Renew</button>
-                      Return</button>
+                      <button onclick="renewBook('${t._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Renew</button>
+                      <button onclick="returnBook('${t._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Return</button>
                     </td>
                   </tr>
                 `;
@@ -1594,7 +1594,7 @@ async function loadSearchBooks() {
             ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
           </select>
         </div>
-        Search</button>
+        <button onclick="performSearch()" style="width: 100%; padding: 12px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Search</button>
       </div>
 
       <div style="margin-bottom: 15px; color: #666;">
@@ -1612,10 +1612,10 @@ async function loadSearchBooks() {
             </p>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
               ${book.available > 0 ? 
-                `Issue</button>` :
-                `+ Wishlist</button>`
+                `<button onclick="requestBook('${book._id}')" style="padding: 8px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer;">Issue</button>` :
+                `<button onclick="addToWishlist('${book._id}')" style="padding: 8px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">+ Wishlist</button>`
               }
-              Details</button>
+              <button onclick="viewBookDetails('${book._id}')" style="grid-column: 1/-1; padding: 8px; background: #eef1f7; color: #0f5132; border: 1px solid #0f5132; border-radius: 5px; cursor: pointer;">Details</button>
             </div>
           </div>
         `).join('') : '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No books found.</p>'}
@@ -1663,10 +1663,10 @@ async function performSearch() {
           </p>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
             ${book.available > 0 ? 
-              `Issue</button>` :
-              `+ Wishlist</button>`
+              `<button onclick="requestBook('${book._id}')" style="padding: 8px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer;">Issue</button>` :
+              `<button onclick="addToWishlist('${book._id}')" style="padding: 8px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">+ Wishlist</button>`
             }
-            Details</button>
+            <button onclick="viewBookDetails('${book._id}')" style="grid-column: 1/-1; padding: 8px; background: #eef1f7; color: #0f5132; border: 1px solid #0f5132; border-radius: 5px; cursor: pointer;">Details</button>
           </div>
         </div>
       `).join('')
@@ -1720,8 +1720,8 @@ async function loadMyBooks() {
                       ${isOverdue ? `${Math.abs(daysLeft)} days overdue` : `${daysLeft} days`}
                     </td>
                     <td style="padding: 12px; text-align: center;">
-                      Renew</button>
-                      Return</button>
+                      <button onclick="renewBook('${t._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Renew</button>
+                      <button onclick="returnBook('${t._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Return</button>
                     </td>
                   </tr>
                 `;
@@ -1796,8 +1796,8 @@ async function loadWishlist() {
               ${(item.book.available || 0) > 0 ? `Available Now! (${item.book.available})` : 'Not Available'}
             </p>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-              ${(item.book.available || 0) > 0 ? `Request</button>` : ''}
-              Remove</button>
+              ${(item.book.available || 0) > 0 ? `<button onclick="requestBook('${item.book._id}')" style="padding: 8px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer;">Request</button>` : ''}
+              <button onclick="removeFromWishlist('${item.book._id}')" style="padding: 8px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Remove</button>
             </div>
             <p style="font-size: 12px; color: #999; margin-top: 10px;">Added: ${new Date(item.addedAt).toLocaleDateString()}</p>
           </div>
@@ -1805,7 +1805,7 @@ async function loadWishlist() {
         }).join('') : `
           <div style="grid-column: 1/-1; text-align: center;">
             <p style="font-size: 16px; color: #666;">Your wishlist is empty</p>
-            Explore Books</button>
+            <button onclick="handleStudentNavigation('Search Books')" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Explore Books</button>
           </div>
         `}
       </div>
@@ -1871,7 +1871,7 @@ async function loadStudentFines() {
                   <td style="padding: 12px; color: #dc3545; font-weight: bold;">₹${f.amount.toFixed(2)}</td>
                   <td style="padding: 12px;">${new Date(f.createdAt).toLocaleDateString()}</td>
                   <td style="padding: 12px; text-align: center;">
-                    Pay Now</button>
+                    <button onclick="payFine('${f._id}', ${f.amount})" style="padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">Pay Now</button>
                   </td>
                 </tr>
               `).join('')}
@@ -2070,8 +2070,8 @@ async function loadStudentProfile() {
             <input type="text" value="${userDetails.isActive ? 'Active ✓' : 'Inactive'}" disabled style="width: 100%; padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 5px; color: ${userDetails.isActive ? '#198754' : '#dc3545'}; font-weight: bold;">
           </div>
 
-          Update Profile</button>
-          Change Password</button>
+          <button type="submit" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Update Profile</button>
+          <button type="button" onclick="changePassword()" style="padding: 10px 20px; background: #ffc107; color: black; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-left: 10px;">Change Password</button>
         </form>
       </div>
     `;
@@ -2119,14 +2119,14 @@ async function loadNotifications() {
       <h1>Notifications 🔔</h1>
       
       ${notifications.length > 0 ? `
-        Mark All as Read</button>
+        <button onclick="markAllNotificationsRead()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px;">Mark All as Read</button>
         <div style="display: flex; flex-direction: column; gap: 15px;">
           ${notifications.map(n => `
             <div style="background: ${n.isRead ? '#f8f9fa' : '#e7f3ff'}; padding: 20px; border-radius: 12px; border-left: 4px solid ${n.isRead ? '#ddd' : '#0f5132'};">
               <h3 style="margin: 0 0 10px 0; color: #0f5132;">${n.title}</h3>
               <p style="margin: 0 0 10px 0; color: #666;">${n.message}</p>
               <small style="color: #999;">${new Date(n.createdAt).toLocaleDateString()} ${new Date(n.createdAt).toLocaleTimeString()}</small>
-              ${!n.isRead ? `Mark as Read</button>` : ''}
+              ${!n.isRead ? `<button onclick="markNotificationRead('${n._id}')" style="margin-left: 10px; padding: 5px 10px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer;">Mark as Read</button>` : ''}
             </div>
           `).join('')}
         </div>
@@ -2247,7 +2247,7 @@ async function viewBookDetails(bookId) {
       : 'No ratings yet';
 
     content.innerHTML = `
-      ← Back</button>
+      <button onclick="handleStudentNavigation('Search Books')" style="margin-bottom: 20px; padding: 8px 15px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">← Back</button>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; background: white; padding: 30px; border-radius: 12px;">
         <div>
@@ -2275,8 +2275,8 @@ async function viewBookDetails(bookId) {
           ` : ''}
 
           ${book.available > 0 ? 
-            `Request This Book</button>` :
-            `Add to Wishlist</button>`
+            `<button onclick="requestBook('${book._id}')" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Request This Book</button>` :
+            `<button onclick="addToWishlist('${book._id}')" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Add to Wishlist</button>`
           }
         </div>
       </div>
@@ -2457,8 +2457,8 @@ async function loadRequests() {
                   </td>
                   <td style="padding: 12px;">${new Date(r.requestDate).toLocaleString()}</td>
                   <td style="padding: 12px; text-align: center;">
-                    Approve</button>
-                    Reject</button>
+                    <button onclick="approveRequest('${r._id}')" style="padding: 5px 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Approve</button>
+                    <button onclick="rejectRequest('${r._id}')" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Reject</button>
                   </td>
                 </tr>
               `).join('')}
@@ -2641,7 +2641,7 @@ async function loadMyRequests() {
         ` : `
           <div style="text-align: center; padding: 40px;">
             <p style="font-size: 16px; color: #666;">You haven't made any requests yet</p>
-            Browse Books</button>
+            <button onclick="handleStudentNavigation('Search Books')" style="padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Browse Books</button>
           </div>
         `}
       </div>
