@@ -496,8 +496,8 @@ async function loadRequests() {
                   </td>
                   <td style="padding: 15px; text-align: center;">
                     ${r.status === 'pending' ? `
-                      ✅ Allow</button>
-                      ❌ Reject</button>
+                      <button onclick="approveRequest('${r._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">✅ Allow</button>
+                      <button onclick="rejectRequest('${r._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">❌ Reject</button>
                     ` : `<span style="color: #666;">-</span>`}
                   </td>
                 </tr>
@@ -1355,8 +1355,8 @@ async function filterRequests(status) {
                 </td>
                 <td style="padding: 15px; text-align: center;">
                   ${r.status === 'pending' ? `
-                    ✅ Allow</button>
-                    ❌ Reject</button>
+                    <button onclick="approveRequest('${r._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">✅ Allow</button>
+                    <button onclick="rejectRequest('${r._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">❌ Reject</button>
                   ` : `<span style="color: #666;">-</span>`}
                 </td>
               </tr>

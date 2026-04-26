@@ -1450,7 +1450,7 @@ async function loadStudentDashboard() {
         </div>
         <div style="text-align: right;">
           <div style="text-align: right;">
-            
+            <button onclick="handleStudentNavigation('Notifications')" style="position: relative; background: none; border: none; font-size: 24px; cursor: pointer;">
               🔔 
               ${unreadNotifications > 0 ? `<span style="position: absolute; top: 0; right: 0; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">${unreadNotifications}</span>` : ''}
             </button>
@@ -1514,7 +1514,7 @@ async function loadStudentDashboard() {
                     </td>
                     <td style="padding: 12px; text-align: center;">
                       <button onclick="renewBook('${t._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Renew</button>
-                      <button onclick="returnBook('${t._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Return</button>
+                      <button onclick="requestReturn('${t._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Return</button>
                     </td>
                   </tr>
                 `;
@@ -1721,7 +1721,7 @@ async function loadMyBooks() {
                     </td>
                     <td style="padding: 12px; text-align: center;">
                       <button onclick="renewBook('${t._id}')" style="padding: 6px 12px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">Renew</button>
-                      <button onclick="returnBook('${t._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Return</button>
+                      <button onclick="requestReturn('${t._id}')" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Return</button>
                     </td>
                   </tr>
                 `;

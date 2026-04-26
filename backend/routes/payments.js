@@ -108,8 +108,8 @@ router.post('/verify-payment', auth, async (req, res) => {
     if (payment.purpose === 'fine') {
       // Mark associated fines as paid
       await Fine.updateMany(
-        { userId: userId, status: 'active' },
-        { status: 'paid', paidDate: new Date() }
+        { user: userId, isPaid: false },
+        { isPaid: true, paidDate: new Date() }
       );
     }
 
