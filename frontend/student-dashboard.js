@@ -2698,15 +2698,130 @@ async function loadQRScanner() {
     <h1>📸 Scan Book QR Code</h1>
     <div style="max-width: 500px; margin: 20px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center;">
       <div id="reader" style="width: 100%; border: 2px dashed #ddd; border-radius: 8px; min-height: 250px; background: #fafafa; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;"></div>
-      <button id="startScanBtn" style="padding: 10px 20px; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px;">Start Camera</button>
+      
+      <div style="margin-bottom: 15px;">
+        <input type="text" id="esp32IpInput" value="10.118.100.240" placeholder="ESP32 IP (e.g. 192.168.1.10)" style="padding: 10px; width: 150px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px;">
+      </div>
+
+      <button id="startScanBtn" style="padding: 10px 20px; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px; margin: 5px;">Start Camera</button>
+      <button id="esp32ScanBtn" style="padding: 10px 20px; background: #009688; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px; margin: 5px;">Listen to ESP32 Camera</button>
       <div id="scanResult" style="margin-top: 20px; text-align: left; display: none; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #eef2ff;"></div>
     </div>
   `;
 
   let html5QrcodeScanner = null;
+  let esp32Interval = null;
+
+  document.getElementById('esp32ScanBtn').addEventListener('click', () => {
+    const btn = document.getElementById('esp32ScanBtn');
+    const resultDiv = document.getElementById('scanResult');
+    const readerDiv = document.getElementById('reader');
+    
+    // If laptop camera is turning on, stop it
+    if (html5QrcodeScanner) {
+      html5QrcodeScanner.stop().then(() => {
+        html5QrcodeScanner.clear();
+        html5QrcodeScanner = null;
+        document.getElementById('startScanBtn').textContent = 'Start Camera';
+        document.getElementById('startScanBtn').style.background = '#4f46e5';
+      }).catch(e => console.error("Html5Qrcode stop:", e));
+    }
+    
+    if (esp32Interval) {
+      clearInterval(esp32Interval);
+      esp32Interval = null;
+      btn.textContent = 'Listen to ESP32 Camera';
+      btn.style.background = '#009688';
+      resultDiv.style.display = 'none';
+      if (readerDiv) readerDiv.innerHTML = '';
+      return;
+    }
+    
+    btn.textContent = 'Stop ESP32 Camera';
+    btn.style.background = '#dc3545';
+    
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<p>Connecting to live ESP32 stream...</p>';
+    
+    // Embed the live camera stream directly from the ESP32!
+    const esp32Ip = document.getElementById('esp32IpInput').value.trim();
+    if (readerDiv) {
+      readerDiv.innerHTML = `
+        <img id="esp32StreamImg" src="http://${esp32Ip}:81/stream" style="width: 100%; border-radius: 8px; display: block; object-fit: cover;" alt="Loading ESP32 Live Stream..."/>
+      `;
+    }
+    
+    setTimeout(() => { resultDiv.innerHTML = '<p>🔍 Scanning live stream directly for QR codes...</p>'; }, 1000);
+
+    // Fetch snapshot images from ESP32 directly and scan them with JS!
+    esp32Interval = setInterval(async () => {
+      try {
+        const response = await fetch(`http://${esp32Ip}/capture?_cb=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) return;
+        
+        const blob = await response.blob();
+        const imgBmp = await createImageBitmap(blob);
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = imgBmp.width;
+        canvas.height = imgBmp.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(imgBmp, 0, 0);
+        
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        
+        if (code && code.data) {
+          // Success! Clear interval
+          clearInterval(esp32Interval);
+          esp32Interval = null;
+          
+          btn.textContent = 'Listen to ESP32 Camera';
+          btn.style.background = '#009688';
+          if (readerDiv) readerDiv.innerHTML = '';
+          
+          let qrDataText = code.data;
+          let qrData = null;
+          
+          if (typeof qrDataText === 'string') {
+            if (qrDataText.startsWith("{") === false && qrDataText.includes('bookId')) {
+               qrDataText = qrDataText.replace(/^"|"$/g, '').replace(/\\"/g, '"');
+            }
+          }
+          
+          try {
+              qrData = JSON.parse(qrDataText);
+          } catch(parseErr) {
+              qrData = { bookId: qrDataText };
+          }
+          
+          if (qrData && qrData.bookId) {
+            await loadBookFromQR(qrData.bookId, qrData);
+          } else {
+             showScanError('Invalid Library QR Code from ESP32');
+          }
+        }
+      } catch(err) {
+        // Ignore fetch errors, keep trying on next interval
+      }
+    }, 500); // 2 FPS is generally enough for QR and preserves bandwidth
+  });
 
   document.getElementById('startScanBtn').addEventListener('click', () => {
     const btn = document.getElementById('startScanBtn');
+    const resultDiv = document.getElementById('scanResult');
+    const readerDiv = document.getElementById('reader');
+
+    // If ESP32 is listening, stop it so the laptop camera can take over
+    if (esp32Interval) {
+      clearInterval(esp32Interval);
+      esp32Interval = null;
+      document.getElementById('esp32ScanBtn').textContent = 'Listen to ESP32 Camera';
+      document.getElementById('esp32ScanBtn').style.background = '#009688';
+      resultDiv.style.display = 'none';
+      if (readerDiv) readerDiv.innerHTML = '';
+    }
+
     if (html5QrcodeScanner) {
       html5QrcodeScanner.stop().then(() => {
         html5QrcodeScanner.clear();
@@ -2719,6 +2834,8 @@ async function loadQRScanner() {
     
     btn.textContent = 'Stop Camera';
     btn.style.background = '#dc3545';
+    resultDiv.style.display = 'none';
+    if (readerDiv) readerDiv.innerHTML = '';
     
     html5QrcodeScanner = new Html5Qrcode('reader');
     const config = { fps: 10, qrbox: { width: 250, height: 250 } };

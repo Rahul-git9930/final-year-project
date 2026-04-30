@@ -293,6 +293,16 @@ router.get('/admin/statistics', auth, roleAuth('admin'), async (req, res) => {
   }
 });
 
+// ==================== GET RAZORPAY/STRIPE CONFIG ====================
+// Get payment configuration
+router.get('/config', auth, (req, res) => {
+  res.json({
+    // You can replace these with actual keys if you integrate a real payment gateway
+    gateway: 'mock', 
+    key: process.env.PAYMENT_GATEWAY_KEY || 'mock_key_here'
+  });
+});
+
 // ==================== GET SINGLE PAYMENT ====================
 // Get payment details by ID
 router.get('/:paymentId', auth, async (req, res) => {

@@ -67,6 +67,34 @@ app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/requests', require('./routes/requests'));
 app.use('/api/payments', require('./routes/payments'));
 
+// --- External QR Scanner Integration (SSE) ---
+const scanClients = new Set();
+
+app.get('/api/scan-stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders(); 
+
+  scanClients.add(res);
+
+  req.on('close', () => {
+    scanClients.delete(res);
+  });
+});
+
+app.post('/api/external-scan', (req, res) => {
+  const { qrData } = req.body;
+  if (!qrData) return res.status(400).json({ error: 'No qrData provided' });
+  
+  scanClients.forEach(client => {
+    client.write(`data: ${JSON.stringify({ qrData })}\n\n`);
+  });
+  
+  res.json({ success: true, message: 'Scan forwarded to connected dashboards' });
+});
+// ---------------------------------------------
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err.message);
