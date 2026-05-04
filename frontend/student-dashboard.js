@@ -130,7 +130,7 @@ async function loadDashboard() {
             <div class="card">Total Books<br><b>${stats.totalBooks}</b></div>
             <div class="card">Total Members<br><b>${stats.totalMembers}</b></div>
             <div class="card">Books Issued<br><b>${stats.booksIssued}</b></div>
-            <div class="card">Pending Fines<br><b>$${stats.pendingFines.toFixed(2)}</b></div>
+            <div class="card">Pending Fines<br><b>₹${stats.pendingFines.toFixed(2)}</b></div>
           </div>
 
           <div class="cards" style="margin-top: 20px;">
@@ -201,7 +201,7 @@ async function loadDashboard() {
         <div class="cards">
           <div class="card">Books Issued<br><b>${transactions.filter(t => t.status === 'issued' || t.status === 'overdue').length}</b></div>
           <div class="card">Books Returned<br><b>${transactions.filter(t => t.status === 'returned').length}</b></div>
-          <div class="card">Pending Fines<br><b>$${totalUnpaid.toFixed(2)}</b></div>
+          <div class="card">Pending Fines<br><b>₹${totalUnpaid.toFixed(2)}</b></div>
           <div class="card">Total Transactions<br><b>${transactions.length}</b></div>
         </div>
 
@@ -241,7 +241,7 @@ async function loadDashboard() {
         <div class="card">Total Books<br><b>0</b></div>
         <div class="card">Total Members<br><b>0</b></div>
         <div class="card">Books Issued<br><b>0</b></div>
-        <div class="card">Pending Fines<br><b>$0.00</b></div>
+        <div class="card">Pending Fines<br><b>₹0.00</b></div>
       </div>
     `;
   }
@@ -556,7 +556,7 @@ async function viewUserDetails(userId) {
         <p><strong>Status:</strong> <span style="color: ${userDetails.isActive ? 'green' : 'red'}">${userDetails.isActive ? 'Active' : 'Inactive'}</span></p>
         <p><strong>Member Since:</strong> ${new Date(userDetails.createdAt).toLocaleDateString()}</p>
         
-        <h3 style="margin-top: 30px;">Pending Fines: $${totalUnpaid.toFixed(2)}</h3>
+        <h3 style="margin-top: 30px;">Pending Fines: ₹${totalUnpaid.toFixed(2)}</h3>
         
         ${fines.length > 0 ? `
           <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
@@ -572,7 +572,7 @@ async function viewUserDetails(userId) {
             <tbody>
               ${fines.map(f => `
                 <tr style="border-bottom: 1px solid #eee;">
-                  <td style="padding: 10px;">$${f.amount.toFixed(2)}</td>
+                  <td style="padding: 10px;">₹${f.amount.toFixed(2)}</td>
                   <td style="padding: 10px;">${f.reason}</td>
                   <td style="padding: 10px;">${new Date(f.createdAt).toLocaleDateString()}</td>
                   <td style="padding: 10px;">${f.isPaid ? 'Paid' : 'Unpaid'}</td>
@@ -773,7 +773,7 @@ async function loadFines() {
         <div class="card">Total Fines<br><b>${stats.totalFines || 0}</b></div>
         <div class="card">Paid Fines<br><b>${stats.paidFines || 0}</b></div>
         <div class="card">Unpaid Fines<br><b>${stats.unpaidFines || 0}</b></div>
-        <div class="card">Total Amount<br><b>$${(stats.totalAmount || 0).toFixed(2)}</b></div>
+        <div class="card">Total Amount<br><b>₹${(stats.totalAmount || 0).toFixed(2)}</b></div>
       </div>
 
       All</button>
@@ -797,7 +797,7 @@ async function loadFines() {
               ${fines.map(f => `
                 <tr style="border-bottom: 1px solid #eee;">
                   <td style="padding: 15px;">${f.user.name}</td>
-                  <td style="padding: 15px;">$${f.amount.toFixed(2)}</td>
+                  <td style="padding: 15px;">₹${f.amount.toFixed(2)}</td>
                   <td style="padding: 15px;">${f.reason}</td>
                   <td style="padding: 15px;">${new Date(f.createdAt).toLocaleDateString()}</td>
                   <td style="padding: 15px;">
@@ -852,7 +852,7 @@ async function filterFines(isPaid) {
           ${fines.map(f => `
             <tr style="border-bottom: 1px solid #eee;">
               <td style="padding: 15px;">${f.user.name}</td>
-              <td style="padding: 15px;">$${f.amount.toFixed(2)}</td>
+              <td style="padding: 15px;">₹${f.amount.toFixed(2)}</td>
               <td style="padding: 15px;">${f.reason}</td>
               <td style="padding: 15px;">${new Date(f.createdAt).toLocaleDateString()}</td>
               <td style="padding: 15px;">
@@ -1033,15 +1033,15 @@ async function generateFineCollectionReport() {
         
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">
           <div style="padding: 15px; background: #d4edda; border-radius: 8px; text-align: center;">
-            <div style="font-size: 24px; font-weight: bold; color: #155724;">$${totalCollected.toFixed(2)}</div>
+            <div style="font-size: 24px; font-weight: bold; color: #155724;">₹${totalCollected.toFixed(2)}</div>
             <div>Collected</div>
           </div>
           <div style="padding: 15px; background: #fff3cd; border-radius: 8px; text-align: center;">
-            <div style="font-size: 24px; font-weight: bold; color: #856404;">$${totalPending.toFixed(2)}</div>
+            <div style="font-size: 24px; font-weight: bold; color: #856404;">₹${totalPending.toFixed(2)}</div>
             <div>Pending</div>
           </div>
           <div style="padding: 15px; background: #e7f3ff; border-radius: 8px; text-align: center;">
-            <div style="font-size: 24px; font-weight: bold; color: #004085;">$${totalFines.toFixed(2)}</div>
+            <div style="font-size: 24px; font-weight: bold; color: #004085;">₹${totalFines.toFixed(2)}</div>
             <div>Total Fines</div>
           </div>
         </div>
@@ -1061,7 +1061,7 @@ async function generateFineCollectionReport() {
               ${fines.slice(0, 10).map(f => `
                 <tr style="border-bottom: 1px solid #eee;">
                   <td style="padding: 10px;">${f.user?.name || 'N/A'}</td>
-                  <td style="padding: 10px; font-weight: bold;">$${f.amount.toFixed(2)}</td>
+                  <td style="padding: 10px; font-weight: bold;">₹${f.amount.toFixed(2)}</td>
                   <td style="padding: 10px;">
                     <span style="padding: 4px 8px; background: ${f.isPaid ? '#d4edda' : '#f8d7da'}; color: ${f.isPaid ? '#155724' : '#721c24'}; border-radius: 5px;">
                       ${f.isPaid ? 'Paid' : 'Unpaid'}
@@ -1935,37 +1935,64 @@ async function payFine(fineId) {
     }
     
     // Use payment handler to process payment
-    if (typeof paymentHandler !== 'undefined') {
+    // Generate UPI Payment QR Code
+    const upiUrl = `upi://pay?pa=library@upi&pn=Library%20Fines&am=${fine.amount}&cu=INR&tn=Fine%20Payment%20-%20${encodeURIComponent(fine.reason)}`;
+    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUrl)}`;
+
+    const modalHtml = `
+      <div id="qrPaymentModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px);">
+        <div style="background: white; padding: 35px; border-radius: 16px; text-align: center; max-width: 400px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);">
+          <h2 style="margin-top: 0; margin-bottom: 10px; color: #333; font-size: 24px;">Scan to Pay ₹${fine.amount.toFixed(2)}</h2>
+          <p style="color: #666; margin-bottom: 25px; font-size: 14px;">Use any UPI App (GPay, PhonePe, Paytm)</p>
+          
+          <img src="${qrImageUrl}" alt="Payment QR Code" style="width: 200px; height: 200px; border: 2px solid #eaeaea; border-radius: 12px; padding: 10px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+          
+          <div style="display: flex; gap: 15px; justify-content: center;">
+              <button id="markPaidBtn" style="padding: 12px 24px; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; transition: 0.2s;">I have paid</button>
+              <button id="closeQrBtn" style="padding: 12px 24px; background: #e5e7eb; color: #4b5563; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; transition: 0.2s;">Cancel</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    let existingModal = document.getElementById('qrPaymentModal');
+    if (existingModal) existingModal.remove();
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('closeQrBtn').addEventListener('click', () => {
+      document.getElementById('qrPaymentModal').remove();
+    });
+
+    document.getElementById('markPaidBtn').addEventListener('click', async () => {
+      document.getElementById('markPaidBtn').innerText = 'Processing...';
+      document.getElementById('markPaidBtn').style.opacity = '0.7';
+      
       try {
-        await paymentHandler.payFine(fine.amount, `Fine Payment - ${fine.reason}`);
-        loadStudentFines(); // Reload after payment
-      } catch (error) {
-        console.error('Payment error:', error);
-        alert('❌ Payment failed: ' + error.message);
-      }
-    } else {
-      // Fallback to old method if payment handler not loaded
-      if (!confirm('Payment gateway not available. Mark fine for counter payment?')) {
-        return;
-      }
-      
-      const response = await fetch(`/api/fines/${fineId}/pay`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': 'Bearer ' + token
+          const response = await fetch(`/api/fines/${fineId}/pay`, {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+        
+        if (response.ok) {
+          alert('✅ Payment verified! Fine marked as paid.');
+          document.getElementById('qrPaymentModal').remove();
+          loadStudentFines();
+        } else {
+          const error = await response.json();
+          alert('❌ Error: ' + (error.message || 'Failed to process payment'));
+          document.getElementById('markPaidBtn').innerText = 'I have paid';
+          document.getElementById('markPaidBtn').style.opacity = '1';
         }
-      });
-      
-      if (response.ok) {
-        alert('✅ Fine marked for payment! Please complete the payment at the library counter.');
-        loadStudentFines();
-      } else {
-        const error = await response.json();
-        alert('❌ Error: ' + (error.message || 'Failed to process fine payment'));
+      } catch (e) {
+        console.error(e);
+        alert('❌ Network error during payment confirmation');
+        document.getElementById('markPaidBtn').innerText = 'I have paid';
+        document.getElementById('markPaidBtn').style.opacity = '1';
       }
-    }
-  } catch (error) {
-    console.error('Error paying fine:', error);
+    });
+    } catch (error) {
     alert('❌ Error processing payment');
   }
 }
@@ -2840,7 +2867,7 @@ async function loadQRScanner() {
     html5QrcodeScanner = new Html5Qrcode('reader');
     const config = { fps: 10, qrbox: { width: 250, height: 250 } };
     
-    html5QrcodeScanner.start({ facingMode: 'environment' }, config, async (decodedText) => {
+    html5QrcodeScanner.start({ facingMode: { ideal: 'environment' } }, config, async (decodedText) => {
       html5QrcodeScanner.stop().then(() => {
         html5QrcodeScanner.clear();
         html5QrcodeScanner = null;
@@ -2848,17 +2875,42 @@ async function loadQRScanner() {
       }).catch(err => console.error('Failed to stop on scan', err));
       
       try {
-        const qrData = JSON.parse(decodedText);
+        let qrDataText = decodedText;
+        if (typeof qrDataText === 'string' && !qrDataText.startsWith("{") && qrDataText.includes('bookId')) {
+           qrDataText = qrDataText.replace(/^"|"$/g, '').replace(/\\"/g, '"');
+        }
+        
+        let qrData = null;
+        try {
+            qrData = JSON.parse(qrDataText);
+        } catch(parseErr) {
+            qrData = { bookId: qrDataText };
+        }
+        
         if(qrData && qrData.bookId) {
            await loadBookFromQR(qrData.bookId, qrData);
         } else {
            showScanError('Invalid Library QR Code');
         }
       } catch(e) {
-        showScanError('Invalid Library QR Code format.');
+        showScanError('Invalid Library QR Code format. ' + e.message);
       }
     }, (error) => {}).catch(err => {
-      showScanError('Failed to access camera: ' + err);
+      console.error("Camera start error:", err);
+      // Provide a more detailed error message
+      let errMsg = err.message || err.toString();
+      if (errMsg.includes('NotAllowedError')) {
+         errMsg = "Camera access denied. Please allow camera permissions in your browser.";
+      } else if (errMsg.includes('NotFoundError')) {
+         errMsg = "No camera found on this device.";
+      } else if (errMsg.includes('NotSupportedError') || navigator.mediaDevices === undefined) {
+         errMsg = "Secure context required. Use localhost or HTTPS to access the camera.";
+      }
+      showScanError('Failed to access camera: ' + errMsg);
+      
+      html5QrcodeScanner = null;
+      btn.textContent = 'Start Camera';
+      btn.style.background = '#4f46e5';
     });
   });
 }

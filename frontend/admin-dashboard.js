@@ -132,7 +132,7 @@ async function loadDashboard() {
         <div class="card">Total Books<br><b>${stats.totalBooks || 0}</b></div>
         <div class="card">Total Members<br><b>${stats.totalMembers || 0}</b></div>
         <div class="card">Books Issued<br><b>${stats.booksIssued || 0}</b></div>
-        <div class="card">Pending Fines<br><b>$${pendingFines.toFixed(2)}</b></div>
+        <div class="card">Pending Fines<br><b>₹{pendingFines.toFixed(2)}</b></div>
       </div>
 
       <div class="cards" style="margin-top: 20px;">
@@ -420,7 +420,7 @@ async function loadFines() {
               ${fines.map(f => `
                 <tr style="border-bottom: 1px solid #eee;">
                   <td style="padding: 15px;">${f.userId?.name || 'Unknown'}</td>
-                  <td style="padding: 15px;">$${f.amount.toFixed(2)}</td>
+                  <td style="padding: 15px;">₹${f.amount.toFixed(2)}</td>
                   <td style="padding: 15px;">${f.reason || 'Overdue'}</td>
                   <td style="padding: 15px;"><span style="color: ${f.isPaid ? 'green' : 'red'};">${f.isPaid ? '✅ Paid' : '❌ Pending'}</span></td>
                   <td style="padding: 15px; text-align: center;">
@@ -1162,11 +1162,11 @@ async function generateFineCollectionReport() {
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 20px 0;">
         <div style="background: #d4edda; padding: 20px; border-radius: 10px;">
           <h3>Total Collected</h3>
-          <p style="font-size: 24px; font-weight: bold; color: #155724;">$${totalCollected.toFixed(2)}</p>
+          <p style="font-size: 24px; font-weight: bold; color: #155724;">₹${totalCollected.toFixed(2)}</p>
         </div>
         <div style="background: #fff3cd; padding: 20px; border-radius: 10px;">
           <h3>Pending Collection</h3>
-          <p style="font-size: 24px; font-weight: bold; color: #856404;">$${totalPending.toFixed(2)}</p>
+          <p style="font-size: 24px; font-weight: bold; color: #856404;">₹${totalPending.toFixed(2)}</p>
         </div>
         <div style="background: #e3f2fd; padding: 20px; border-radius: 10px;">
           <h3>Total Fines</h3>
@@ -1188,7 +1188,7 @@ async function generateFineCollectionReport() {
           ${paidFines.map(f => `
             <tr style="border-bottom: 1px solid #eee;">
               <td style="padding: 15px;">${f.userId?.name || 'Unknown'}</td>
-              <td style="padding: 15px;">$${f.amount.toFixed(2)}</td>
+              <td style="padding: 15px;">₹${f.amount.toFixed(2)}</td>
               <td style="padding: 15px;">${f.reason || 'Overdue'}</td>
               <td style="padding: 15px;">${f.paidDate ? new Date(f.paidDate).toLocaleDateString() : '-'}</td>
             </tr>

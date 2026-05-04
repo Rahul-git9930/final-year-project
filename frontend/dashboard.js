@@ -1,4 +1,4 @@
-// Dashboard functionality
+﻿// Dashboard functionality
 document.addEventListener('DOMContentLoaded', function() {
   // Check if user is logged in
   const token = localStorage.getItem('token');
@@ -173,7 +173,7 @@ async function loadDashboard() {
             <div class="card">Total Books<br><b>${stats.totalBooks}</b></div>
             <div class="card">Total Members<br><b>${stats.totalMembers}</b></div>
             <div class="card">Books Issued<br><b>${stats.booksIssued}</b></div>
-            <div class="card">Pending Fines<br><b>$${stats.pendingFines.toFixed(2)}</b></div>
+            <div class="card">Pending Fines<br><b>₹${stats.pendingFines.toFixed(2)}</b></div>
           </div>
 
           <div class="cards" style="margin-top: 20px;">
@@ -244,7 +244,7 @@ async function loadDashboard() {
         <div class="cards">
           <div class="card">Books Issued<br><b>${transactions.filter(t => t.status === 'issued' || t.status === 'overdue').length}</b></div>
           <div class="card">Books Returned<br><b>${transactions.filter(t => t.status === 'returned').length}</b></div>
-          <div class="card">Pending Fines<br><b>$${totalUnpaid.toFixed(2)}</b></div>
+          <div class="card">Pending Fines<br><b>₹${totalUnpaid.toFixed(2)}</b></div>
           <div class="card">Total Transactions<br><b>${transactions.length}</b></div>
         </div>
 
@@ -284,7 +284,7 @@ async function loadDashboard() {
         <div class="card">Total Books<br><b>0</b></div>
         <div class="card">Total Members<br><b>0</b></div>
         <div class="card">Books Issued<br><b>0</b></div>
-        <div class="card">Pending Fines<br><b>$0.00</b></div>
+        <div class="card">Pending Fines<br><b>₹0.00</b></div>
       </div>
     `;
   }
@@ -599,7 +599,7 @@ async function viewUserDetails(userId) {
         <p><strong>Status:</strong> <span style="color: ${userDetails.isActive ? 'green' : 'red'}">${userDetails.isActive ? 'Active' : 'Inactive'}</span></p>
         <p><strong>Member Since:</strong> ${new Date(userDetails.createdAt).toLocaleDateString()}</p>
         
-        <h3 style="margin-top: 30px;">Pending Fines: $${totalUnpaid.toFixed(2)}</h3>
+        <h3 style="margin-top: 30px;">Pending Fines: ₹${totalUnpaid.toFixed(2)}</h3>
         
         ${fines.length > 0 ? `
           <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
@@ -615,7 +615,7 @@ async function viewUserDetails(userId) {
             <tbody>
               ${fines.map(f => `
                 <tr style="border-bottom: 1px solid #eee;">
-                  <td style="padding: 10px;">$${f.amount.toFixed(2)}</td>
+                  <td style="padding: 10px;">₹${f.amount.toFixed(2)}</td>
                   <td style="padding: 10px;">${f.reason}</td>
                   <td style="padding: 10px;">${new Date(f.createdAt).toLocaleDateString()}</td>
                   <td style="padding: 10px;">${f.isPaid ? 'Paid' : 'Unpaid'}</td>
@@ -816,7 +816,7 @@ async function loadFines() {
         <div class="card">Total Fines<br><b>${stats.totalFines || 0}</b></div>
         <div class="card">Paid Fines<br><b>${stats.paidFines || 0}</b></div>
         <div class="card">Unpaid Fines<br><b>${stats.unpaidFines || 0}</b></div>
-        <div class="card">Total Amount<br><b>$${(stats.totalAmount || 0).toFixed(2)}</b></div>
+        <div class="card">Total Amount<br><b>₹${(stats.totalAmount || 0).toFixed(2)}</b></div>
       </div>
 
       All</button>
@@ -840,7 +840,7 @@ async function loadFines() {
               ${fines.map(f => `
                 <tr style="border-bottom: 1px solid #eee;">
                   <td style="padding: 15px;">${f.user.name}</td>
-                  <td style="padding: 15px;">$${f.amount.toFixed(2)}</td>
+                  <td style="padding: 15px;">₹${f.amount.toFixed(2)}</td>
                   <td style="padding: 15px;">${f.reason}</td>
                   <td style="padding: 15px;">${new Date(f.createdAt).toLocaleDateString()}</td>
                   <td style="padding: 15px;">
@@ -895,7 +895,7 @@ async function filterFines(isPaid) {
           ${fines.map(f => `
             <tr style="border-bottom: 1px solid #eee;">
               <td style="padding: 15px;">${f.user.name}</td>
-              <td style="padding: 15px;">$${f.amount.toFixed(2)}</td>
+              <td style="padding: 15px;">₹${f.amount.toFixed(2)}</td>
               <td style="padding: 15px;">${f.reason}</td>
               <td style="padding: 15px;">${new Date(f.createdAt).toLocaleDateString()}</td>
               <td style="padding: 15px;">
@@ -1076,15 +1076,15 @@ async function generateFineCollectionReport() {
         
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">
           <div style="padding: 15px; background: #d4edda; border-radius: 8px; text-align: center;">
-            <div style="font-size: 24px; font-weight: bold; color: #155724;">$${totalCollected.toFixed(2)}</div>
+            <div style="font-size: 24px; font-weight: bold; color: #155724;">₹${totalCollected.toFixed(2)}</div>
             <div>Collected</div>
           </div>
           <div style="padding: 15px; background: #fff3cd; border-radius: 8px; text-align: center;">
-            <div style="font-size: 24px; font-weight: bold; color: #856404;">$${totalPending.toFixed(2)}</div>
+            <div style="font-size: 24px; font-weight: bold; color: #856404;">₹${totalPending.toFixed(2)}</div>
             <div>Pending</div>
           </div>
           <div style="padding: 15px; background: #e7f3ff; border-radius: 8px; text-align: center;">
-            <div style="font-size: 24px; font-weight: bold; color: #004085;">$${totalFines.toFixed(2)}</div>
+            <div style="font-size: 24px; font-weight: bold; color: #004085;">₹${totalFines.toFixed(2)}</div>
             <div>Total Fines</div>
           </div>
         </div>
@@ -1104,7 +1104,7 @@ async function generateFineCollectionReport() {
               ${fines.slice(0, 10).map(f => `
                 <tr style="border-bottom: 1px solid #eee;">
                   <td style="padding: 10px;">${f.user?.name || 'N/A'}</td>
-                  <td style="padding: 10px; font-weight: bold;">$${f.amount.toFixed(2)}</td>
+                  <td style="padding: 10px; font-weight: bold;">₹${f.amount.toFixed(2)}</td>
                   <td style="padding: 10px;">
                     <span style="padding: 4px 8px; background: ${f.isPaid ? '#d4edda' : '#f8d7da'}; color: ${f.isPaid ? '#155724' : '#721c24'}; border-radius: 5px;">
                       ${f.isPaid ? 'Paid' : 'Unpaid'}

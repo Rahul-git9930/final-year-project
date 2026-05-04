@@ -1,4 +1,4 @@
-// ============================================
+﻿// ============================================
 // ADMIN DASHBOARD - LIBRARY MANAGEMENT SYSTEM
 // ============================================
 
@@ -61,7 +61,7 @@ async function loadDashboard() {
         <div class="card">Total Books<br><b>${stats.totalBooks || 0}</b></div>
         <div class="card">Total Members<br><b>${stats.totalMembers || 0}</b></div>
         <div class="card">Books Issued<br><b>${stats.booksIssued || 0}</b></div>
-        <div class="card">Pending Fines<br><b>$${pendingFines.toFixed(2)}</b></div>
+        <div class="card">Pending Fines<br><b>₹${pendingFines.toFixed(2)}</b></div>
       </div>
 
       <div class="cards" style="margin-top: 20px;">
@@ -340,7 +340,7 @@ async function loadFines() {
               ${fines.map(f => `
                 <tr style="border-bottom: 1px solid #eee;">
                   <td style="padding: 15px;">${f.userId?.name || 'Unknown'}</td>
-                  <td style="padding: 15px;">$${f.amount.toFixed(2)}</td>
+                  <td style="padding: 15px;">₹${f.amount.toFixed(2)}</td>
                   <td style="padding: 15px;">${f.reason || 'Overdue'}</td>
                   <td style="padding: 15px;"><span style="color: ${f.isPaid ? 'green' : 'red'};">${f.isPaid ? '✅ Paid' : '❌ Pending'}</span></td>
                   <td style="padding: 15px; text-align: center;">
