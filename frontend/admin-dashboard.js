@@ -210,12 +210,12 @@ async function loadBooks() {
     content.innerHTML = `
       <h1>📚 Books Management</h1>
       ${(user.role === 'admin' || user.role === 'librarian') ? `
-        + Add New Book</button>
+        <button onclick="showAddBookForm()" style="margin-bottom: 20px; padding: 10px 20px; background: #0f5132; color: white; border: none; border-radius: 8px; cursor: pointer;">+ Add New Book</button>
       ` : ''}
       
       <div style="margin-bottom: 20px;">
         <input type="text" id="searchBooks" placeholder="Search books..." style="padding: 10px; width: 300px; border: 1px solid #ddd; border-radius: 5px;">
-        🔍 Search</button>
+        <button onclick="searchBooks()" style="padding: 10px 20px; background: black; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">🔍 Search</button>
       </div>
 
       <div class="books-list">
@@ -243,8 +243,8 @@ async function loadBooks() {
                   </td>
                   ${(user.role === 'admin' || user.role === 'librarian') ? `
                     <td style="padding: 15px; text-align: center;">
-                      Edit</button>
-                      ${user.role === 'admin' ? `Delete</button>` : ''}
+                      <button onclick="editBook('${book._id}')" style="padding: 5px 10px; margin: 0 5px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer;">Edit</button>
+                      ${user.role === 'admin' ? `<button onclick="deleteBook('${book._id}')" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;"><button onclick="deleteBook('${book._id}')" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Delete</button>` : ''}
                     </td>
                   ` : ''}
                 </tr>
