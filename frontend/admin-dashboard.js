@@ -559,6 +559,236 @@ function loadSettings() {
   `;
 }
 
+// ================== ERP COLLEGE MANAGEMENT ==================
+async function loadColleges() {
+  const content = document.querySelector('.content');
+  const token = localStorage.getItem('token');
+  content.innerHTML = '<h1>🏛️ Colleges</h1><p>Loading colleges...</p>';
+
+  try {
+    const response = await fetchWithTimeout('/api/colleges?limit=100', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to load colleges');
+
+    const colleges = result.data || [];
+    content.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;">
+        <h1 style="margin:0;">🏛️ Colleges</h1>
+        <button onclick="showCollegeForm()" style="padding:10px 16px;border:none;border-radius:8px;background:#4f46e5;color:white;cursor:pointer;">+ Add College</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;background:white;">
+          <thead><tr style="background:#111;color:white;"><th style="padding:12px;text-align:left;">Name</th><th style="padding:12px;text-align:left;">Code</th><th style="padding:12px;text-align:left;">City</th><th style="padding:12px;text-align:left;">Status</th><th style="padding:12px;text-align:left;">Actions</th></tr></thead>
+          <tbody>
+            ${colleges.map(college => `
+              <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:12px;">${escapeHtml(college.name)}</td>
+                <td style="padding:12px;">${escapeHtml(college.code)}</td>
+                <td style="padding:12px;">${escapeHtml(college.city || '-')}</td>
+                <td style="padding:12px;">${college.isActive ? 'Active' : 'Inactive'}</td>
+                <td style="padding:12px;">
+                  <button onclick='showCollegeForm(${JSON.stringify(college).replace(/'/g, '&#39;')})' style="padding:6px 10px;border:none;border-radius:6px;background:#0d6efd;color:white;cursor:pointer;">Edit</button>
+                  <button onclick="deleteCollege('${college._id}')" style="padding:6px 10px;border:none;border-radius:6px;background:#dc3545;color:white;cursor:pointer;margin-left:6px;">Delete</button>
+                </td>
+              </tr>
+            `).join('') || '<tr><td colspan="5" style="padding:20px;text-align:center;color:#666;">No colleges found</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (error) {
+    content.innerHTML = `<h1>🏛️ Colleges</h1><p style="color:#dc3545;">${escapeHtml(error.message)}</p><button onclick="loadColleges()">Retry</button>`;
+  }
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
+}
+
+function showCollegeForm(existing = null) {
+  const data = existing || {};
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;';
+  modal.innerHTML = `
+    <div style="width:min(620px,100%);max-height:90vh;overflow-y:auto;background:white;border-radius:14px;padding:24px;">
+      <h2>${data._id ? 'Edit College' : 'Add College'}</h2>
+      <form id="collegeForm">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          ${erpField('name', 'College name', data.name)}
+          ${erpField('code', 'College code', data.code)}
+          ${erpField('city', 'City', data.city)}
+          ${erpField('state', 'State', data.state)}
+          ${erpField('country', 'Country', data.country || 'India')}
+          ${erpField('contactNumber', 'Contact number', data.contactNumber)}
+          ${erpField('email', 'Email', data.email, 'email')}
+          ${erpField('website', 'Website', data.website)}
+          ${erpField('affiliation', 'Affiliation', data.affiliation)}
+          ${erpField('university', 'University', data.university)}
+        </div>
+        ${erpField('address', 'Address', data.address)}
+        ${erpField('registrationDetails', 'Registration details', data.registrationDetails)}
+        ${erpField('accreditation', 'Accreditation', data.accreditation)}
+        ${erpField('logoUrl', 'Logo URL', data.logoUrl)}
+        <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:10px;">
+          <button type="button" onclick="this.closest('[style*=fixed]').remove()" style="padding:10px 16px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;">Cancel</button>
+          <button type="submit" style="padding:10px 16px;border:none;border-radius:8px;background:#4f46e5;color:white;cursor:pointer;">Save</button>
+        </div>
+      </form>
+    </div>`;
+  document.body.appendChild(modal);
+
+  document.getElementById('collegeForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    await saveCollege(data._id, Object.fromEntries(formData), modal);
+  });
+}
+
+function erpField(name, label, value = '', type = 'text') {
+  return `<label style="display:block;margin-bottom:12px;"><span style="display:block;font-size:13px;margin-bottom:6px;color:#444;">${escapeHtml(label)}</span><input name="${name}" type="${type}" value="${escapeHtml(value)}" style="width:100%;padding:9px;border:1px solid #ddd;border-radius:8px;"></label>`;
+}
+
+async function saveCollege(id, payload, modal) {
+  const token = localStorage.getItem('token');
+  const submitButton = modal.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.textContent = 'Saving...';
+  try {
+    const response = await fetchWithTimeout(id ? `/api/colleges/${id}` : '/api/colleges', {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to save college');
+    modal.remove();
+    alert('College saved successfully');
+    loadColleges();
+  } catch (error) {
+    alert(error.message);
+    submitButton.disabled = false;
+    submitButton.textContent = 'Save';
+  }
+}
+
+async function deleteCollege(id) {
+  if (!confirm('Delete this college? Related ERP records will not be automatically removed.')) return;
+  const token = localStorage.getItem('token');
+  try {
+    const response = await fetchWithTimeout(`/api/colleges/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to delete college');
+    alert('College deleted successfully');
+    loadColleges();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+// ================== ERP DEPARTMENT MANAGEMENT ==================
+async function loadDepartments() {
+  const content = document.querySelector('.content');
+  const token = localStorage.getItem('token');
+  content.innerHTML = '<h1>🏢 Departments</h1><p>Loading departments...</p>';
+
+  try {
+    const collegeResponse = await fetchWithTimeout('/api/colleges?limit=100', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const collegeResult = await collegeResponse.json();
+    if (!collegeResponse.ok) throw new Error(collegeResult.message || 'Failed to load colleges');
+    const colleges = collegeResult.data || [];
+    if (!colleges.length) {
+      content.innerHTML = '<h1>🏢 Departments</h1><p>No active college is available. Create a college first.</p>';
+      return;
+    }
+
+    const firstCollegeId = colleges[0]._id;
+    const response = await fetchWithTimeout(`/api/departments?collegeId=${encodeURIComponent(firstCollegeId)}&limit=100`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to load departments');
+    const departments = result.data || [];
+
+    content.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;">
+        <h1 style="margin:0;">🏢 Departments</h1>
+        <button onclick='showDepartmentForm(${JSON.stringify(colleges).replace(/'/g, '&#39;')})' style="padding:10px 16px;border:none;border-radius:8px;background:#4f46e5;color:white;cursor:pointer;">+ Add Department</button>
+      </div>
+      <table style="width:100%;border-collapse:collapse;background:white;">
+        <thead><tr style="background:#111;color:white;"><th style="padding:12px;text-align:left;">Name</th><th style="padding:12px;text-align:left;">Code</th><th style="padding:12px;text-align:left;">HOD</th><th style="padding:12px;text-align:left;">Status</th><th style="padding:12px;text-align:left;">Actions</th></tr></thead>
+        <tbody>
+          ${departments.map(department => `
+            <tr style="border-bottom:1px solid #eee;">
+              <td style="padding:12px;">${escapeHtml(department.name)}</td>
+              <td style="padding:12px;">${escapeHtml(department.code)}</td>
+              <td style="padding:12px;">${escapeHtml(department.hod?.name || '-')}</td>
+              <td style="padding:12px;">${department.isActive ? 'Active' : 'Inactive'}</td>
+              <td style="padding:12px;"><button onclick='showDepartmentForm(${JSON.stringify(colleges).replace(/'/g, '&#39;')}, ${JSON.stringify(department).replace(/'/g, '&#39;')})' style="padding:6px 10px;border:none;border-radius:6px;background:#0d6efd;color:white;cursor:pointer;">Edit</button></td>
+            </tr>
+          `).join('') || '<tr><td colspan="5" style="padding:20px;text-align:center;color:#666;">No departments found</td></tr>'}
+        </tbody>
+      </table>
+    `;
+  } catch (error) {
+    content.innerHTML = `<h1>🏢 Departments</h1><p style="color:#dc3545;">${escapeHtml(error.message)}</p>`;
+  }
+}
+
+function showDepartmentForm(colleges, existing = null) {
+  const data = existing || {};
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;';
+  modal.innerHTML = `
+    <div style="width:min(520px,100%);background:white;border-radius:14px;padding:24px;">
+      <h2>${data._id ? 'Edit Department' : 'Add Department'}</h2>
+      <form id="departmentForm">
+        <label style="display:block;margin-bottom:12px;"><span style="display:block;font-size:13px;margin-bottom:6px;">College</span><select name="college" ${data._id ? 'disabled' : ''} style="width:100%;padding:9px;border:1px solid #ddd;border-radius:8px;">${colleges.map(college => `<option value="${college._id}" ${data.college?._id === college._id ? 'selected' : ''}>${escapeHtml(college.name)}</option>`).join('')}</select></label>
+        ${erpField('name', 'Department name', data.name)}
+        ${erpField('code', 'Department code', data.code)}
+        ${erpField('description', 'Description', data.description)}
+        <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:10px;">
+          <button type="button" onclick="this.closest('[style*=fixed]').remove()" style="padding:10px 16px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;">Cancel</button>
+          <button type="submit" style="padding:10px 16px;border:none;border-radius:8px;background:#4f46e5;color:white;cursor:pointer;">Save</button>
+        </div>
+      </form>
+    </div>`;
+  document.body.appendChild(modal);
+  document.getElementById('departmentForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    await saveDepartment(data._id, Object.fromEntries(new FormData(event.target)), modal);
+  });
+}
+
+async function saveDepartment(id, payload, modal) {
+  const token = localStorage.getItem('token');
+  const submitButton = modal.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  try {
+    const response = await fetchWithTimeout(id ? `/api/departments/${id}` : '/api/departments', {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to save department');
+    modal.remove();
+    alert('Department saved successfully');
+    loadDepartments();
+  } catch (error) {
+    alert(error.message);
+    submitButton.disabled = false;
+  }
+}
+
 // ================== NAVIGATION ==================
 function handleNavigation(page) {
   const sidebarItems = document.querySelectorAll('.sidebar-menu li');
@@ -572,6 +802,12 @@ function handleNavigation(page) {
   switch(page) {
     case 'Dashboard':
       loadDashboard();
+      break;
+    case 'Colleges':
+      loadColleges();
+      break;
+    case 'Departments':
+      loadDepartments();
       break;
     case 'Books':
       loadBooks();

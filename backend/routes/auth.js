@@ -90,7 +90,11 @@ router.post('/register', async (req, res) => {
     const payload = {
       user: {
         id: user.id,
-        role: user.role
+        role: user.role,
+        name: user.name,
+        email: user.email,
+        college: user.college ? user.college.toString() : null,
+        permissions: user.permissions || []
       }
     };
 
@@ -125,7 +129,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Check if user is active
-    if (!user.isActive) {
+    if (!user.isActive || (user.accountStatus && user.accountStatus !== 'active')) {
       return res.status(403).json({ message: 'Account is deactivated' });
     }
 
@@ -145,7 +149,11 @@ router.post('/login', async (req, res) => {
     const payload = {
       user: {
         id: user.id,
-        role: user.role
+        role: user.role,
+        name: user.name,
+        email: user.email,
+        college: user.college ? user.college.toString() : null,
+        permissions: user.permissions || []
       }
     };
 

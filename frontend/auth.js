@@ -27,7 +27,17 @@ document.addEventListener('DOMContentLoaded', function() {
           
           // Redirect based on role
           const role = data.user.role;
-          if (role === 'admin' || role === 'librarian') {
+          if (
+            role === 'super_admin' ||
+            role === 'college_admin' ||
+            role === 'hod' ||
+            role === 'faculty' ||
+            role === 'librarian' ||
+            role === 'accountant' ||
+            role === 'placement_officer' ||
+            role === 'hostel_manager' ||
+            role === 'admin'
+          ) {
             window.location.href = '/admin-dashboard.html';
           } else {
             window.location.href = '/student-dashboard.html';

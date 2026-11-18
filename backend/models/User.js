@@ -17,8 +17,20 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'librarian', 'member', 'student'],
+    enum: [
+      'super_admin', 'college_admin', 'hod', 'faculty', 'librarian',
+      'student', 'member', 'accountant', 'placement_officer',
+      'hostel_manager', 'admin'
+    ],
     default: 'member'
+  },
+  permissions: [{ type: String, trim: true }],
+  college: { type: mongoose.Schema.Types.ObjectId, ref: 'College', default: null },
+  department: { type: mongoose.Schema.Types.ObjectId, ref: 'Department', default: null },
+  accountStatus: {
+    type: String,
+    enum: ['active', 'inactive', 'suspended', 'graduated'],
+    default: 'active'
   },
   isActive: {
     type: Boolean,

@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const compression = require('compression');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
 
@@ -16,6 +18,15 @@ const frontendDir = path.join(__dirname, '..', 'frontend');
 
 // Middleware
 app.use(cors());
+app.use(helmet({
+  contentSecurityPolicy: false
+}));
+app.use('/api/auth', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: true,
+  legacyHeaders: false
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(compression({ threshold: 1024 }));
@@ -71,6 +82,9 @@ app.use('/api/wishlist', require('./routes/wishlist'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/requests', require('./routes/requests'));
 app.use('/api/payments', require('./routes/payments'));
+app.use('/api/colleges', require('./routes/colleges'));
+app.use('/api/departments', require('./routes/departments'));
+app.use('/api/audit-logs', require('./routes/auditLogs'));
 
 // --- External QR Scanner Integration (SSE) ---
 const scanClients = new Set();
