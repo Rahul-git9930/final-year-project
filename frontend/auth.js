@@ -6,10 +6,18 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       
       const formData = new FormData(loginForm);
-      const email = formData.get('email');
-      const password = formData.get('password');
+      const email = String(formData.get('email') || '').trim().toLowerCase();
+      const password = String(formData.get('password') || '');
+      const submitButton = loginForm.querySelector('button[type="submit"]');
+
+      if (!email || !password) {
+        alert('Please enter both email and password');
+        return;
+      }
 
       try {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Logging in...';
         const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
@@ -48,6 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch (error) {
         console.error('Login error:', error);
         alert('An error occurred during login');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Login';
       }
     });
   }

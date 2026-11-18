@@ -122,6 +122,10 @@ router.post('/login', async (req, res) => {
     const adminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
     const normalizedEmail = (email || '').toLowerCase();
 
+    if (!normalizedEmail || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
     // Check if user exists
     let user = await User.findOne({ email: normalizedEmail });
     if (!user) {
