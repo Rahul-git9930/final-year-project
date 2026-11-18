@@ -38,12 +38,46 @@ app.use(express.static(frontendDir, {
 }));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ MongoDB Connected Successfully'))
-.catch(err => console.error('❌ MongoDB Connection Error:', err));
+const mongoUri = process.env.MONGO_URI;
+
+if (!mongoUri) {
+  console.error('❌ MongoDB configuration error: MONGO_URI environment variable is missing');
+} else {
+  mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log('✅ MongoDB Connected Successfully'))
+  .catch(err => console.error('❌ MongoDB Connection Error:', err.message));
+}
+
+app.get('/api/health', (req, res) => {
+  const states = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+  const databaseStatus = states[mongoose.connection.readyState] || 'unknown';
+
+  res.status(databaseStatus === 'connected' ? 200 : 503).json({
+    status: databaseStatus === 'connected' ? 'healthy' : 'degraded',
+    database: databaseStatus,
+    mongoConfigured: Boolean(mongoUri)
+  });
+});
+
+app.use('/api', (req, res, next) => {
+  if (req.path === '/health') return next();
+  if (!mongoUri) {
+    return res.status(503).json({
+      message: 'Database is not configured',
+      code: 'MONGO_URI_NOT_CONFIGURED'
+    });
+  }
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      message: 'Database is unavailable',
+      code: 'DATABASE_UNAVAILABLE'
+    });
+  }
+  next();
+});
 
 // Routes
 app.get('/', (req, res) => {
