@@ -732,7 +732,10 @@ async function loadDepartments() {
               <td style="padding:12px;">${escapeHtml(department.code)}</td>
               <td style="padding:12px;">${escapeHtml(department.hod?.name || '-')}</td>
               <td style="padding:12px;">${department.isActive ? 'Active' : 'Inactive'}</td>
-              <td style="padding:12px;"><button onclick='showDepartmentForm(${JSON.stringify(colleges).replace(/'/g, '&#39;')}, ${JSON.stringify(department).replace(/'/g, '&#39;')})' style="padding:6px 10px;border:none;border-radius:6px;background:#0d6efd;color:white;cursor:pointer;">Edit</button></td>
+              <td style="padding:12px;">
+                <button onclick='showDepartmentForm(${JSON.stringify(colleges).replace(/'/g, '&#39;')}, ${JSON.stringify(department).replace(/'/g, '&#39;')})' style="padding:6px 10px;border:none;border-radius:6px;background:#0d6efd;color:white;cursor:pointer;">Edit</button>
+                <button onclick="deleteDepartment('${department._id}')" style="padding:6px 10px;border:none;border-radius:6px;background:#dc3545;color:white;cursor:pointer;margin-left:6px;">Delete</button>
+              </td>
             </tr>
           `).join('') || '<tr><td colspan="5" style="padding:20px;text-align:center;color:#666;">No departments found</td></tr>'}
         </tbody>
@@ -766,6 +769,23 @@ function showDepartmentForm(colleges, existing = null) {
     event.preventDefault();
     await saveDepartment(data._id, Object.fromEntries(new FormData(event.target)), modal);
   });
+}
+
+async function deleteDepartment(id) {
+  if (!confirm('Delete this department?')) return;
+  const token = localStorage.getItem('token');
+  try {
+    const response = await fetchWithTimeout(`/api/departments/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to delete department');
+    alert('Department deleted successfully');
+    loadDepartments();
+  } catch (error) {
+    alert(error.message);
+  }
 }
 
 async function saveDepartment(id, payload, modal) {

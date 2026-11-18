@@ -70,7 +70,7 @@ router.get('/:id', [auth, roleAuth('super_admin', 'college_admin', 'admin')], as
   }
 });
 
-router.post('/', [auth, roleAuth('super_admin', 'college_admin', 'admin'), permissionAuth('college.manage')], async (req, res) => {
+router.post('/', [auth, roleAuth('super_admin', 'admin'), permissionAuth('college.manage')], async (req, res) => {
   try {
     const required = ['name', 'code'];
     if (required.some(field => !req.body[field])) {

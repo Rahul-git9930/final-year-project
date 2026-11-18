@@ -1,5 +1,17 @@
 # 📚 Library Management System - Complete Documentation
 
+## College ERP foundation
+
+This project now includes the first ERP foundation module:
+
+- ERP roles: super admin, college admin, HOD, faculty, accountant, placement officer, hostel manager
+- Permission middleware and JWT permission data
+- College CRUD APIs at `/api/colleges`
+- Department CRUD APIs at `/api/departments`
+- College tenant scoping
+- Audit log APIs at `/api/audit-logs`
+- College and department management in the existing admin dashboard
+
 ## Welcome! 👋
 
 This is a **complete, production-ready Library Management System** built with the **MERN Stack** (MongoDB, Express, Vanilla JavaScript, Node.js).

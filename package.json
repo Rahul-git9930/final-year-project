@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
-    "test": "node --check backend/server.js && node --check backend/routes/auth.js && node --check backend/routes/books.js && node --check backend/routes/dashboard.js && node --check backend/routes/payments.js && node --check backend/routes/reviews.js && node --check frontend/dashboard.js && node --check frontend/admin-dashboard.js && node --check frontend/student-dashboard.js"
+    "test": "node --check backend/server.js && node --check backend/routes/auth.js && node --check backend/routes/books.js && node --check backend/routes/dashboard.js && node --check backend/routes/payments.js && node --check backend/routes/reviews.js && node --check backend/routes/colleges.js && node --check backend/routes/departments.js && node --check backend/routes/auditLogs.js && node --check backend/middleware/permissionAuth.js && node --check backend/middleware/tenantScope.js && node --check frontend/dashboard.js && node --check frontend/admin-dashboard.js && node --check frontend/student-dashboard.js"
   },
   "keywords": [
     "library",
