@@ -8,11 +8,41 @@ const Fine = require('../models/Fine');
 const auth = require('../middleware/auth');
 const roleAuth = require('../middleware/roleAuth');
 
-// Initialize Razorpay instance
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+const hasPlaceholderKey = value =>
+  !value || value.includes('your_') || value.includes('mock');
+const isRazorpayConfigured =
+  !hasPlaceholderKey(razorpayKeyId) && !hasPlaceholderKey(razorpayKeySecret);
+
+let razorpay = null;
+
+function getRazorpay() {
+  if (!isRazorpayConfigured) {
+    return null;
+  }
+
+  if (!razorpay) {
+    razorpay = new Razorpay({
+      key_id: razorpayKeyId,
+      key_secret: razorpayKeySecret
+    });
+  }
+
+  return razorpay;
+}
+
+function requireRazorpay(res) {
+  if (!isRazorpayConfigured) {
+    res.status(503).json({
+      error: 'Payment gateway is not configured',
+      code: 'PAYMENT_GATEWAY_NOT_CONFIGURED'
+    });
+    return null;
+  }
+
+  return getRazorpay();
+}
 
 // ==================== CREATE ORDER ====================
 // Create Razorpay order for payment
@@ -20,6 +50,8 @@ router.post('/create-order', auth, async (req, res) => {
   try {
     const { amount, purpose, description, referenceId } = req.body;
     const userId = req.user.id;
+    const razorpayClient = requireRazorpay(res);
+    if (!razorpayClient) return;
 
     // Validate input
     if (!amount || !purpose) {
@@ -39,7 +71,7 @@ router.post('/create-order', auth, async (req, res) => {
       }
     };
 
-    const order = await razorpay.orders.create(options);
+    const order = await razorpayClient.orders.create(options);
 
     // Save payment record with pending status
     const payment = new Payment({
@@ -74,6 +106,7 @@ router.post('/verify-payment', auth, async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     const userId = req.user.id;
+    if (!requireRazorpay(res)) return;
 
     // Verify signature
     const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -297,9 +330,9 @@ router.get('/admin/statistics', auth, roleAuth('admin'), async (req, res) => {
 // Get payment configuration
 router.get('/config', auth, (req, res) => {
   res.json({
-    // You can replace these with actual keys if you integrate a real payment gateway
-    gateway: 'mock', 
-    key: process.env.PAYMENT_GATEWAY_KEY || 'mock_key_here'
+    gateway: isRazorpayConfigured ? 'razorpay' : 'mock',
+    configured: isRazorpayConfigured,
+    key: isRazorpayConfigured ? razorpayKeyId : 'mock_key_here'
   });
 });
 
