@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const compression = require('compression');
 const path = require('path');
 const fs = require('fs');
 
@@ -17,9 +18,13 @@ const frontendDir = path.join(__dirname, '..', 'frontend');
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(compression({ threshold: 1024 }));
 
 // Serve static frontend files from the separated frontend folder
-app.use(express.static(frontendDir));
+app.use(express.static(frontendDir, {
+  maxAge: process.env.NODE_ENV === 'production' ? '1h' : 0,
+  etag: true
+}));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {

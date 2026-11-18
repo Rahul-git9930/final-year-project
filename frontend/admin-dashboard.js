@@ -132,7 +132,7 @@ async function loadDashboard() {
         <div class="card">Total Books<br><b>${stats.totalBooks || 0}</b></div>
         <div class="card">Total Members<br><b>${stats.totalMembers || 0}</b></div>
         <div class="card">Books Issued<br><b>${stats.booksIssued || 0}</b></div>
-        <div class="card">Pending Fines<br><b>₹{pendingFines.toFixed(2)}</b></div>
+        <div class="card">Pending Fines<br><b>₹${pendingFines.toFixed(2)}</b></div>
       </div>
 
       <div class="cards" style="margin-top: 20px;">

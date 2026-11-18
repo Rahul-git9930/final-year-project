@@ -5,7 +5,8 @@
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js"
+    "dev": "nodemon backend/server.js",
+    "test": "node --check backend/server.js && node --check backend/routes/auth.js && node --check backend/routes/books.js && node --check backend/routes/dashboard.js && node --check backend/routes/payments.js && node --check backend/routes/reviews.js && node --check frontend/dashboard.js && node --check frontend/admin-dashboard.js && node --check frontend/student-dashboard.js"
   },
   "keywords": [
     "library",
@@ -17,6 +18,7 @@
   "dependencies": {
     "axios": "^1.13.4",
     "bcryptjs": "^2.4.3",
+    "compression": "^1.8.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",

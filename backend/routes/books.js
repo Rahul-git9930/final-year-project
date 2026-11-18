@@ -14,10 +14,11 @@ router.get('/', async (req, res) => {
     let query = {};
 
     if (search) {
+      const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { author: { $regex: search, $options: 'i' } },
-        { isbn: { $regex: search, $options: 'i' } }
+        { title: { $regex: escapedSearch, $options: 'i' } },
+        { author: { $regex: escapedSearch, $options: 'i' } },
+        { isbn: { $regex: escapedSearch, $options: 'i' } }
       ];
     }
 
@@ -29,7 +30,10 @@ router.get('/', async (req, res) => {
       query.available = { $gt: 0 };
     }
 
-    const books = await Book.find(query).populate('addedBy', 'name email');
+    const books = await Book.find(query)
+      .select('title isbn author publisher category quantity available description publishedYear coverImage qrCode')
+      .populate('addedBy', 'name email')
+      .lean();
     res.json(books);
   } catch (err) {
     console.error(err.message);

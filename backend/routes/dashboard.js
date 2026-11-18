@@ -12,47 +12,38 @@ const Fine = require('../models/Fine');
 // @access  Private (Admin/Librarian only)
 router.get('/stats', [auth, roleAuth('admin', 'librarian')], async (req, res) => {
   try {
-    // Total books
-    const totalBooks = await Book.countDocuments();
-    
-    // Total members (exclude admin and librarian)
-    const totalMembers = await User.countDocuments({ 
-      role: { $in: ['member', 'student'] } 
-    });
-    
-    // Books issued (currently issued)
-    const booksIssued = await Transaction.countDocuments({ 
-      status: { $in: ['issued', 'overdue'] } 
-    });
-    
-    // Pending fines
-    const pendingFines = await Fine.aggregate([
-      { $match: { isPaid: false } },
-      { $group: { _id: null, total: { $sum: '$amount' } } }
+    const [
+      totalBooks,
+      totalMembers,
+      booksIssued,
+      pendingFines,
+      overdueBooks,
+      activeMembers,
+      availableBooks,
+      recentTransactions
+    ] = await Promise.all([
+      Book.countDocuments(),
+      User.countDocuments({ role: { $in: ['member', 'student'] } }),
+      Transaction.countDocuments({ status: { $in: ['issued', 'overdue'] } }),
+      Fine.aggregate([
+        { $match: { isPaid: false } },
+        { $group: { _id: null, total: { $sum: '$amount' } } }
+      ]),
+      Transaction.countDocuments({ status: 'overdue' }),
+      User.countDocuments({
+        role: { $in: ['member', 'student'] },
+        isActive: true
+      }),
+      Book.aggregate([
+        { $group: { _id: null, total: { $sum: '$available' } } }
+      ]),
+      Transaction.find()
+        .populate('book', 'title')
+        .populate('user', 'name')
+        .sort({ issueDate: -1 })
+        .limit(5)
+        .lean()
     ]);
-    
-    // Overdue books
-    const overdueBooks = await Transaction.countDocuments({
-      status: 'overdue'
-    });
-    
-    // Active members (have membership validity)
-    const activeMembers = await User.countDocuments({
-      role: { $in: ['member', 'student'] },
-      isActive: true
-    });
-    
-    // Total book copies available
-    const availableBooks = await Book.aggregate([
-      { $group: { _id: null, total: { $sum: '$available' } } }
-    ]);
-
-    // Recent transactions
-    const recentTransactions = await Transaction.find()
-      .populate('book', 'title')
-      .populate('user', 'name')
-      .sort({ issueDate: -1 })
-      .limit(5);
 
     res.json({
       totalBooks,

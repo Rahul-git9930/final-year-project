@@ -2256,37 +2256,11 @@ async function viewBookDetails(bookId) {
 
 async function renewBook(transactionId) {
   const token = localStorage.getItem('token');
-  
+
   if (!confirm('Are you sure you want to renew this book?')) {
     return;
-  const token = localStorage.getItem('token');
-  
-  if (!confirm('Are you sure you want to request book return?')) {
-    return;
   }
-  
-  try {
-    const response = await fetch('/api/requests/return', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify({ transactionId })
-    });
 
-    if (response.ok) {
-      alert('Return request submitted successfully! Please bring the book to the library.');
-      loadStudentDashboard();
-    } else {
-      const error = await response.json();
-      alert(error.message || 'Failed to submit return request');
-    }
-  } catch (error) {
-    console.error('Error submitting return:', error);
-    alert('Error submitting return request');
-  }
-  
   try {
     const response = await fetch('/api/requests/renew', {
       method: 'POST',
@@ -2307,12 +2281,16 @@ async function renewBook(transactionId) {
   } catch (error) {
     console.error('Error submitting renewal:', error);
     alert('Error submitting renewal request');
+  }
+}
+
+async function markFinePaid(fineId) {
   const token = localStorage.getItem('token');
-  
+
   if (!confirm('Mark this fine as paid? Please ensure you have paid at the library counter.')) {
     return;
   }
-  
+
   try {
     const response = await fetch(`/api/fines/${fineId}/pay`, {
       method: 'PUT',
@@ -2327,11 +2305,11 @@ async function renewBook(transactionId) {
       loadStudentFines();
     } else {
       const error = await response.json();
-      alert(error.message || 'Failed to mark fine as paid. Please contact the librarian.');
+      alert(error.message || 'Failed to mark fine as paid');
     }
   } catch (error) {
     console.error('Error paying fine:', error);
-    alert('Error processing payment. Please contact the librarian.');
+    alert('Error processing payment');
   }
 }
 
@@ -2609,6 +2587,8 @@ async function loadMyRequests() {
   } catch (error) {
     console.error('Error loading requests:', error);
   }
+}
+
 async function changePassword() {
   const currentPassword = prompt('Enter your current password:');
   if (!currentPassword) return;
