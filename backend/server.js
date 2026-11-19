@@ -58,7 +58,8 @@ app.get('/api/health', (req, res) => {
   res.status(databaseStatus === 'connected' ? 200 : 503).json({
     status: databaseStatus === 'connected' ? 'healthy' : 'degraded',
     database: databaseStatus,
-    mongoConfigured: Boolean(mongoUri)
+    mongoConfigured: Boolean(mongoUri),
+    jwtSecretConfigured: Boolean(process.env.JWT_SECRET)
   });
 });
 

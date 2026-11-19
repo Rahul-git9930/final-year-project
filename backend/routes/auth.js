@@ -20,6 +20,13 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Name, email, and password are required' });
     }
 
+    if (!process.env.JWT_SECRET) {
+      return res.status(503).json({
+        message: 'Authentication is not configured',
+        code: 'JWT_SECRET_NOT_CONFIGURED'
+      });
+    }
+
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
       return res.status(400).json({ message: 'Invalid email format' });
     }
@@ -109,7 +116,11 @@ router.post('/register', async (req, res) => {
     );
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
+    res.status(500).json({
+      message: 'Login could not be completed',
+      code: 'LOGIN_FAILED',
+      detail: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
@@ -124,6 +135,13 @@ router.post('/login', async (req, res) => {
 
     if (!normalizedEmail || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      return res.status(503).json({
+        message: 'Authentication is not configured',
+        code: 'JWT_SECRET_NOT_CONFIGURED'
+      });
     }
 
     // Check if user exists
