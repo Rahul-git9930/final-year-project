@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - Library Management System</title>
   <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="design-system.css">
+  <link rel="stylesheet" href="erp-layout.css">
   <style>
     .dashboard {
       display: flex;
@@ -87,14 +89,23 @@
   <link rel="stylesheet" href="responsive.css">
 </head>
 <body>
-  <div class="dashboard">
-    <div class="sidebar">
-      <h2> Library Admin</h2>
-      <div class="user-info">
-        <p><strong id="userName">Admin</strong></p>
-        <p id="userRole">Administrator</p>
+  <div class="erp-app" id="erpApp">
+    <aside class="sidebar erp-sidebar">
+      <div class="erp-brand">
+        <div class="erp-brand-mark">L</div>
+        <div class="erp-brand-copy">
+          <strong>LibraryHub ERP</strong>
+          <small>College Management</small>
+        </div>
       </div>
-      <ul class="sidebar-menu" id="sidebarMenu">
+      <div class="erp-profile-mini">
+        <div class="erp-avatar" id="erpAvatar">A</div>
+        <div>
+          <strong id="userName">Admin</strong>
+          <small id="userRole">Administrator</small>
+        </div>
+      </div>
+      <ul class="sidebar-menu erp-sidebar-menu" id="sidebarMenu">
         <li class="active">Dashboard</li>
         <li>Colleges</li>
         <li>Departments</li>
@@ -108,19 +119,37 @@
         <li>Reports</li>
         <li>Settings</li>
       </ul>
-      <div class="sidebar-footer">
-        <button onclick="logout()" style="width: 100%; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Logout</button>
+      <div class="erp-sidebar-footer">
+        <button onclick="logout()" style="width: 100%; padding: 10px; background: #b91c1c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Logout</button>
       </div>
-    </div>
-    
-    <div class="content">
-      <h1>Admin Dashboard</h1>
-      <p>Loading data...</p>
-    </div>
+    </aside>
+
+    <main class="erp-workspace">
+      <header class="erp-header">
+        <button class="erp-icon-button erp-mobile-menu" id="erpMobileMenu" type="button" aria-label="Open navigation">☰</button>
+        <div class="erp-header-title">
+          <h1 id="erpPageTitle">Admin Dashboard</h1>
+          <p>College ERP / Administration</p>
+        </div>
+        <div class="erp-search">
+          <input type="search" id="erpGlobalSearch" placeholder="Search students, courses, books..." aria-label="Global search">
+        </div>
+        <div class="erp-header-actions">
+          <button class="erp-icon-button" id="erpThemeToggle" type="button" aria-label="Toggle dark mode">◐</button>
+          <button class="erp-icon-button" type="button" aria-label="Notifications">🔔</button>
+          <div class="erp-avatar" id="erpHeaderAvatar">A</div>
+        </div>
+      </header>
+      <section class="content erp-content">
+        <h1>Admin Dashboard</h1>
+        <p>Loading data...</p>
+      </section>
+    </main>
   </div>
 
   <script src="common.js?v=20260129"></script>
   <script src="payment-handler.js"></script>
+  <script src="erp-layout.js"></script>
   <script src="admin-dashboard.js?v=20260129"></script>
 </body>
 </html>
