@@ -37,7 +37,7 @@ router.get('/', async (req, res) => {
     res.json(books);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -58,7 +58,7 @@ router.get('/:id', async (req, res) => {
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ message: 'Book not found' });
     }
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -99,7 +99,7 @@ router.post('/', [auth, roleAuth('admin', 'librarian')], async (req, res) => {
     if (err.code === 11000) {
       return res.status(400).json({ message: 'Book with this ISBN already exists' });
     }
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -135,7 +135,7 @@ router.put('/:id', [auth, roleAuth('admin', 'librarian')], async (req, res) => {
     res.json(book);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -161,7 +161,7 @@ router.delete('/:id', [auth, roleAuth('admin')], async (req, res) => {
     res.json({ message: 'Book deleted' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 

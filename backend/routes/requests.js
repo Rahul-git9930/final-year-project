@@ -28,7 +28,7 @@ router.get('/', [auth, roleAuth('admin', 'librarian')], async (req, res) => {
     res.json(requests);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -45,7 +45,7 @@ router.get('/my', auth, async (req, res) => {
     res.json(requests);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -97,7 +97,7 @@ router.post('/issue', auth, async (req, res) => {
     res.json({ message: 'Book request submitted successfully', request });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -143,7 +143,7 @@ router.post('/renew', auth, async (req, res) => {
     res.json({ message: 'Renewal request submitted successfully', request });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -189,7 +189,7 @@ router.post('/return', auth, async (req, res) => {
     res.json({ message: 'Return request submitted successfully', request });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -320,7 +320,7 @@ router.put('/:id/approve', [auth, roleAuth('admin', 'librarian')], async (req, r
     }
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -361,7 +361,7 @@ router.put('/:id/reject', [auth, roleAuth('admin', 'librarian')], async (req, re
     res.json({ message: 'Request rejected', request });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 

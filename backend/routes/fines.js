@@ -24,7 +24,7 @@ router.get('/', [auth, roleAuth('admin', 'librarian')], async (req, res) => {
     res.json(fines);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -43,7 +43,7 @@ router.get('/my', auth, async (req, res) => {
     res.json(fines);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -62,7 +62,7 @@ router.get('/user/:userId', [auth, roleAuth('admin', 'librarian')], async (req, 
     res.json(fines);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -105,7 +105,7 @@ router.put('/:id/pay', auth, async (req, res) => {
     res.json(updatedFine);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -142,7 +142,7 @@ router.get('/stats', [auth, roleAuth('admin', 'librarian')], async (req, res) =>
     });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 

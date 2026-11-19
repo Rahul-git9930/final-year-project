@@ -45,7 +45,7 @@ router.post('/', auth, async (req, res) => {
     res.json(populatedReview);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -65,7 +65,7 @@ router.get('/book/:bookId', async (req, res) => {
     res.json(reviews);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -99,7 +99,7 @@ router.put('/:id', auth, async (req, res) => {
     res.json(updatedReview);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -123,7 +123,7 @@ router.delete('/:id', auth, async (req, res) => {
     res.json({ message: 'Review deleted' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 

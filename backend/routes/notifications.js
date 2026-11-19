@@ -15,7 +15,7 @@ router.get('/', auth, async (req, res) => {
     res.json(notifications);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -32,7 +32,7 @@ router.get('/unread/count', auth, async (req, res) => {
     res.json({ unreadCount: count });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -50,7 +50,7 @@ router.put('/read-all', auth, async (req, res) => {
     res.json({ message: 'All notifications marked as read' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -75,7 +75,7 @@ router.put('/:id/read', auth, async (req, res) => {
     res.json(notification);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 

@@ -49,7 +49,7 @@ router.get('/email-verification-stats', [auth, roleAuth('admin')], async (req, r
     });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -62,7 +62,7 @@ router.get('/', [auth, roleAuth('admin', 'librarian')], async (req, res) => {
     res.json(users);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -75,7 +75,7 @@ router.get('/me', auth, async (req, res) => {
     res.json(user);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -96,7 +96,7 @@ router.get('/:id', [auth, roleAuth('admin', 'librarian')], async (req, res) => {
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -130,7 +130,7 @@ router.put('/:id', [auth, roleAuth('admin', 'librarian')], async (req, res) => {
     res.json(updatedUser);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -152,7 +152,7 @@ router.put('/:id/toggle-status', [auth, roleAuth('admin')], async (req, res) => 
     res.json(updatedUser);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -178,7 +178,7 @@ router.delete('/:id', [auth, roleAuth('admin')], async (req, res) => {
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -220,7 +220,7 @@ router.put('/change-password', auth, async (req, res) => {
     res.json({ message: 'Password changed successfully' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 

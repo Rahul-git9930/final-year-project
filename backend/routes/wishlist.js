@@ -44,7 +44,7 @@ router.post('/', auth, async (req, res) => {
     if (err.code === 11000) {
       return res.status(400).json({ message: 'Book already in wishlist' });
     }
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -60,7 +60,7 @@ router.get('/', auth, async (req, res) => {
     res.json(wishlist);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -82,7 +82,7 @@ router.delete('/:bookId', auth, async (req, res) => {
     res.json({ message: 'Removed from wishlist' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 

@@ -28,7 +28,7 @@ router.get('/', [auth, roleAuth('admin', 'librarian')], async (req, res) => {
     res.json(transactions);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -44,7 +44,7 @@ router.get('/my', auth, async (req, res) => {
     res.json(transactions);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -107,7 +107,7 @@ router.post('/issue', [auth, roleAuth('admin', 'librarian')], async (req, res) =
     res.json(populatedTransaction);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -162,7 +162,7 @@ router.put('/:id/return', [auth, roleAuth('admin', 'librarian')], async (req, re
     res.json(populatedTransaction);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -188,7 +188,7 @@ router.get('/overdue', [auth, roleAuth('admin', 'librarian')], async (req, res) 
     res.json(transactions);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 

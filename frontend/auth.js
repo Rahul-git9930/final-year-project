@@ -26,7 +26,14 @@ document.addEventListener('DOMContentLoaded', function() {
           body: JSON.stringify({ email, password })
         });
 
-        const data = await response.json();
+        let data;
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          data = await response.json();
+        } else {
+          const text = await response.text();
+          data = { message: text || 'Login failed' };
+        }
 
         if (response.ok) {
           // Store token and user info
