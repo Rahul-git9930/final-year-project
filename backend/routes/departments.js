@@ -9,6 +9,10 @@ const Department = require('../models/Department');
 const College = require('../models/College');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
+const Course = require('../models/Course');
+const Subject = require('../models/Subject');
+const StudentProfile = require('../models/StudentProfile');
+const FacultyProfile = require('../models/FacultyProfile');
 
 async function recordAudit(req, action, resourceId, changes) {
   await AuditLog.create({
@@ -35,7 +39,12 @@ router.get('/', [auth, tenantScope, permissionAuth('department.view')], async (r
     const page = Math.max(parseInt(req.query.page || '1', 10), 1);
     const limit = Math.min(Math.max(parseInt(req.query.limit || '20', 10), 1), 100);
     const search = (req.query.search || '').trim();
-    const collegeId = req.query.collegeId || req.collegeId;
+    let collegeId = req.query.collegeId || req.collegeId;
+
+    if (!collegeId && req.user.role === 'super_admin') {
+      const demoCollege = await College.findOne({ code: 'WMIT-DEMO' }).sort({ createdAt: 1 }).lean();
+      collegeId = demoCollege?._id || await Department.distinct('college').then(ids => ids[0]);
+    }
 
     if (!collegeId) return res.status(400).json({ message: 'College is required' });
     if (!mongoose.isValidObjectId(collegeId)) return res.status(400).json({ message: 'Invalid college ID' });
@@ -86,7 +95,26 @@ router.get('/:id', [auth, tenantScope, permissionAuth('department.view')], async
       .lean();
 
     if (!department) return res.status(404).json({ message: 'Department not found' });
-    res.json({ success: true, data: department });
+
+    const [courses, subjects, students, faculty] = await Promise.all([
+      Course.find({ department: department._id }).sort({ name: 1 }).lean(),
+      Subject.find({ department: department._id }).populate('faculty', 'name email').sort({ name: 1 }).lean(),
+      StudentProfile.find({ department: department._id }).populate('user', 'name email').lean(),
+      FacultyProfile.find({ department: department._id }).populate('user', 'name email').lean()
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        ...department,
+        facultyCount: faculty.length || department.facultyCount || 0,
+        studentCount: students.length || department.studentCount || 0,
+        courses,
+        subjects,
+        faculty,
+        students
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch department' });
   }

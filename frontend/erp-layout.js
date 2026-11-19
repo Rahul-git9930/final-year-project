@@ -5,6 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const pageTitle = document.getElementById('erpPageTitle');
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
+  window.erpHasRole = roleList => {
+    if (!roleList) return true;
+    const roles = Array.isArray(roleList) ? roleList : [roleList];
+    if (user.role === 'super_admin') return true;
+    if (user.role === 'college_admin' && roles.includes('college_admin')) return true;
+    return roles.includes(user.role);
+  };
   const displayName = user.name || user.email || 'User';
   const initials = displayName
     .split(/\s+/)

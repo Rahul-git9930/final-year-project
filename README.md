@@ -1,5 +1,41 @@
 # 📚 Library Management System - Complete Documentation
 
+## Demo College ERP Data
+
+The project includes an opt-in, idempotent demo seeder for a clearly fictional institution:
+
+- Western Maharashtra Institute of Technology (WMIT-DEMO)
+- 2026-2027 academic year
+- 8 departments
+- 6 undergraduate courses
+- 48 semesters
+- 48 subjects
+- 12 fictional student profiles
+- 7 fictional faculty profiles
+
+Enable seeding only when the target database is a demo/local database:
+
+```bash
+DEMO_DATA_MODE=true DEMO_PASSWORD='ChangeMe@2026' npm run seed
+```
+
+Re-running the command is safe. It uses upsert operations and does not delete existing real records.
+
+Demo accounts use reserved `example.com` email addresses. The configured password is `Demo@2026` unless `DEMO_PASSWORD` is supplied. Example accounts include:
+
+| Role | Email |
+|---|---|
+| Super Admin | super.admin@example.com |
+| College Admin | college.admin@example.com |
+| HOD | ananya.kulkarni@example.com |
+| Faculty | rohan.patil@example.com |
+| Librarian | librarian@example.com |
+| Accountant | accountant@example.com |
+| Placement Officer | placement.officer@example.com |
+| Student | student1@example.com |
+
+Demo passwords must be changed before any real-world use.
+
 ## College ERP foundation
 
 This project now includes the first ERP foundation module:

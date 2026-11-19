@@ -720,26 +720,33 @@ async function loadDepartments() {
 
     content.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;">
-        <h1 style="margin:0;">🏢 Departments</h1>
+        <div>
+          <h1 style="margin:0;">Departments</h1>
+          <p style="margin:6px 0 0;color:var(--erp-muted);">8 academic departments in the demo ERP</p>
+        </div>
         <button onclick='showDepartmentForm(${JSON.stringify(colleges).replace(/'/g, '&#39;')})' style="padding:10px 16px;border:none;border-radius:8px;background:#4f46e5;color:white;cursor:pointer;">+ Add Department</button>
       </div>
-      <table style="width:100%;border-collapse:collapse;background:white;">
-        <thead><tr style="background:#111;color:white;"><th style="padding:12px;text-align:left;">Name</th><th style="padding:12px;text-align:left;">Code</th><th style="padding:12px;text-align:left;">HOD</th><th style="padding:12px;text-align:left;">Status</th><th style="padding:12px;text-align:left;">Actions</th></tr></thead>
-        <tbody>
-          ${departments.map(department => `
-            <tr style="border-bottom:1px solid #eee;">
-              <td style="padding:12px;">${escapeHtml(department.name)}</td>
-              <td style="padding:12px;">${escapeHtml(department.code)}</td>
-              <td style="padding:12px;">${escapeHtml(department.hod?.name || '-')}</td>
-              <td style="padding:12px;">${department.isActive ? 'Active' : 'Inactive'}</td>
-              <td style="padding:12px;">
-                <button onclick='showDepartmentForm(${JSON.stringify(colleges).replace(/'/g, '&#39;')}, ${JSON.stringify(department).replace(/'/g, '&#39;')})' style="padding:6px 10px;border:none;border-radius:6px;background:#0d6efd;color:white;cursor:pointer;">Edit</button>
-                <button onclick="deleteDepartment('${department._id}')" style="padding:6px 10px;border:none;border-radius:6px;background:#dc3545;color:white;cursor:pointer;margin-left:6px;">Delete</button>
-              </td>
-            </tr>
-          `).join('') || '<tr><td colspan="5" style="padding:20px;text-align:center;color:#666;">No departments found</td></tr>'}
-        </tbody>
-      </table>
+      <div style="margin-bottom:16px;">
+        <input id="departmentSearch" type="search" placeholder="Search departments..." oninput="filterDepartmentCards(this.value)" style="width:min(420px,100%);height:42px;padding:0 12px;border:1px solid var(--erp-border);border-radius:10px;background:var(--erp-surface);color:var(--erp-text);">
+      </div>
+      <div id="departmentCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
+        ${departments.map((department, index) => `
+          <article class="department-card" data-name="${escapeHtml(department.name.toLowerCase())}" style="border:1px solid var(--erp-border);border-radius:16px;background:var(--erp-surface);padding:18px;box-shadow:var(--erp-shadow-sm);">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:var(--erp-primary-soft);color:var(--erp-primary);font-size:22px;">${departmentIcon(department.code)}</div>
+              <span style="padding:5px 9px;border-radius:999px;background:var(--erp-success-soft);color:var(--erp-success);font-size:12px;font-weight:700;">${department.isActive ? 'Active' : 'Inactive'}</span>
+            </div>
+            <h2 style="font-size:17px;margin:16px 0 4px;">${escapeHtml(department.name)}</h2>
+            <p style="margin:0 0 14px;color:var(--erp-muted);font-size:13px;">${escapeHtml(department.code)}</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+              <div><small style="color:var(--erp-muted);">Students</small><strong style="display:block;margin-top:3px;">${department.studentCount || 0}</strong></div>
+              <div><small style="color:var(--erp-muted);">Faculty</small><strong style="display:block;margin-top:3px;">${department.facultyCount || 0}</strong></div>
+            </div>
+            <p style="margin:0 0 14px;font-size:13px;"><strong>HOD:</strong> ${escapeHtml(department.hodName || department.hod?.name || 'Not assigned')}</p>
+            <button onclick="loadDepartmentDetails('${department._id}')" style="width:100%;padding:9px 12px;border:1px solid var(--erp-primary);border-radius:9px;background:var(--erp-primary-soft);color:var(--erp-primary);font-weight:700;cursor:pointer;">View Details</button>
+          </article>
+        `).join('') || '<p>No departments found</p>'}
+      </div>
     `;
   } catch (error) {
     content.innerHTML = `<h1>🏢 Departments</h1><p style="color:#dc3545;">${escapeHtml(error.message)}</p>`;
@@ -809,6 +816,97 @@ async function saveDepartment(id, payload, modal) {
   }
 }
 
+function departmentIcon(code) {
+  const icons = {
+    COMP: '💻', IT: '🌐', ENTC: '📡', MECH: '⚙️',
+    CIVIL: '🏗️', AIDS: '🤖', ELEC: '⚡', FE: '🎓'
+  };
+  return icons[code] || '🏫';
+}
+
+function filterDepartmentCards(value) {
+  const query = value.trim().toLower();
+  document.querySelectorAll('.department-card').forEach(card => {
+    card.style.display = card.dataset.name.includes(query) ? 'block' : 'none';
+  });
+}
+
+async function loadDepartmentDetails(departmentId) {
+  const content = document.querySelector('.content');
+  const token = localStorage.getItem('token');
+  content.innerHTML = '<h1>Department Details</h1><p>Loading department information...</p>';
+  try {
+    const response = await fetchWithTimeout(`/api/departments/${departmentId}`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to load department');
+    const department = result.data;
+    content.innerHTML = `
+      <button onclick="loadDepartments()" style="margin-bottom:16px;padding:8px 12px;border:1px solid var(--erp-border);border-radius:8px;background:var(--erp-surface);cursor:pointer;">← Back to Departments</button>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+        <div style="width:58px;height:58px;display:grid;place-items:center;border-radius:16px;background:var(--erp-primary-soft);font-size:28px;">${departmentIcon(department.code)}</div>
+        <div>
+          <h1 style="margin:0;">${escapeHtml(department.name)}</h1>
+          <p style="margin:5px 0 0;color:var(--erp-muted);">${escapeHtml(department.code)} • Demo department</p>
+        </div>
+      </div>
+      <div class="cards">
+        <div class="card">Students<b>${department.studentCount || 0}</b></div>
+        <div class="card">Faculty<b>${department.facultyCount || 0}</b></div>
+        <div class="card">Courses<b>${department.courses?.length || 0}</b></div>
+        <div class="card">Subjects<b>${department.subjects?.length || 0}</b></div>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:16px;">
+        <section style="border:1px solid var(--erp-border);border-radius:14px;padding:18px;background:var(--erp-surface);">
+          <h2>Department Overview</h2>
+          <p>${escapeHtml(department.description || 'No department description available.')}</p>
+          <h3>Courses</h3>
+          ${(department.courses || []).map(course => `<div style="padding:10px;border-bottom:1px solid var(--erp-border);"><strong>${escapeHtml(course.name)}</strong><div style="color:var(--erp-muted);font-size:13px;">${escapeHtml(course.code)} • ${course.semesterCount} semesters</div></div>`).join('') || '<p>No courses assigned</p>'}
+        </section>
+        <aside style="border:1px solid var(--erp-border);border-radius:14px;padding:18px;background:var(--erp-surface);">
+          <h2>HOD</h2>
+          <p><strong>${escapeHtml(department.hodName || department.hod?.name || 'Not assigned')}</strong></p>
+          <p>${escapeHtml(department.hodEmail || department.hod?.email || '-')}</p>
+          <h3>Faculty</h3>
+          ${(department.faculty || []).slice(0,6).map(faculty => `<p style="margin:8px 0;">${escapeHtml(faculty.user?.name || 'Faculty member')}</p>`).join('') || '<p>No faculty records</p>'}
+        </aside>
+      </div>
+    `;
+  } catch (error) {
+    content.innerHTML = `<h1>Department Details</h1><p style="color:var(--erp-danger);">${escapeHtml(error.message)}</p><button onclick="loadDepartments()">Back</button>`;
+  }
+}
+
+async function loadDemoCourses() {
+  const content = document.querySelector('.content');
+  const token = localStorage.getItem('token');
+  content.innerHTML = '<h1>Courses</h1><p>Loading demo courses...</p>';
+  try {
+    const response = await fetchWithTimeout('/api/courses?limit=100', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to load courses');
+    const courses = result.data || [];
+    content.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;">
+        <div><h1 style="margin:0;">Courses</h1><p style="margin:6px 0 0;color:var(--erp-muted);">Demo undergraduate academic programs</p></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr><th style="padding:12px;text-align:left;">Course</th><th style="padding:12px;text-align:left;">Code</th><th style="padding:12px;text-align:left;">Department</th><th style="padding:12px;text-align:left;">Duration</th><th style="padding:12px;text-align:left;">Intake</th><th style="padding:12px;text-align:left;">Status</th></tr></thead>
+          <tbody>
+            ${courses.map(course => `<tr><td style="padding:12px;"><strong>${escapeHtml(course.name)}</strong></td><td style="padding:12px;">${escapeHtml(course.code)}</td><td style="padding:12px;">${escapeHtml(course.department?.name || '-')}</td><td style="padding:12px;">${course.durationYears} years</td><td style="padding:12px;">${course.intakeCapacity}</td><td style="padding:12px;">${escapeHtml(course.status)}</td></tr>`).join('') || '<tr><td colspan="6" style="padding:20px;text-align:center;">No courses found</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (error) {
+    content.innerHTML = `<h1>Courses</h1><p style="color:var(--erp-danger);">${escapeHtml(error.message)}</p>`;
+  }
+}
+
 // ================== NAVIGATION ==================
 function handleNavigation(page) {
   const sidebarItems = document.querySelectorAll('.sidebar-menu li');
@@ -828,6 +926,9 @@ function handleNavigation(page) {
       break;
     case 'Departments':
       loadDepartments();
+      break;
+    case 'Courses':
+      loadDemoCourses();
       break;
     case 'Books':
       loadBooks();
@@ -1645,7 +1746,11 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
-  if (user.role !== 'admin' && user.role !== 'librarian') {
+  const allowedAdminRoles = [
+    'admin', 'librarian', 'super_admin', 'college_admin',
+    'hod', 'accountant', 'placement_officer', 'hostel_manager'
+  ];
+  if (!allowedAdminRoles.includes(user.role)) {
     console.warn('❌ Not admin/librarian');
     alert('Access denied. Admin only.');
     window.location.href = '/';

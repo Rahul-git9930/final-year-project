@@ -120,6 +120,8 @@ app.use('/api/payments', require('./routes/payments'));
 app.use('/api/colleges', require('./routes/colleges'));
 app.use('/api/departments', require('./routes/departments'));
 app.use('/api/audit-logs', require('./routes/auditLogs'));
+app.use('/api/courses', require('./routes/courses'));
+app.use('/api/academic-years', require('./routes/academicYears'));
 
 // --- External QR Scanner Integration (SSE) ---
 const scanClients = new Set();
